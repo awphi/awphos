@@ -1,0 +1,4 @@
+- Preferences redux slice to store things like background, date/time locale preference, apps on the task bar
+- Application icons
+- Desktop icons
+- Context menu - maybe components can add things (menu items tied to imperative methods etc.) to the event as it bubbles up and the top-level page.tsx actually renders captures that bubbled events and renders it

@@ -8,6 +8,7 @@ import {
 } from "@/store/applications";
 import React, { createContext, useCallback, useMemo } from "react";
 import { Rnd } from "react-rnd";
+import WindowTitleBar, { TITLE_BAR_HEIGHT } from "./TitleBar";
 
 export interface WindowProps extends React.PropsWithChildren {
   application: Application;
@@ -17,7 +18,6 @@ export const WindowContext = createContext<{ applicationId: string }>({
   applicationId: "",
 });
 
-const TITLE_BAR_HEIGHT = 32;
 const WINDOW_CONTENT_CLASSNAME = "awphos-window-content";
 
 export default function Window({ application }: WindowProps) {
@@ -25,11 +25,6 @@ export default function Window({ application }: WindowProps) {
 
   const contextValue = useMemo(() => ({ applicationId }), [applicationId]);
   const dispatch = useAppDispatch();
-
-  const close = useCallback(
-    () => dispatch(closeApplication(applicationId)),
-    [applicationId]
-  );
 
   const ContentComponent = useMemo(
     () => applications.getComponent(definitionId),
@@ -63,12 +58,7 @@ export default function Window({ application }: WindowProps) {
       cancel={`.${WINDOW_CONTENT_CLASSNAME}`}
     >
       <div className="flex flex-col h-full overflow-hidden">
-        <div
-          className="bg-neutral-800 flex items-center select-none rounded-t-sm border-b border-neutral-600/50 px-2 py-0.5"
-          style={{ minHeight: TITLE_BAR_HEIGHT }}
-        >
-          <p>{props.title}</p>
-        </div>
+        <WindowTitleBar application={application}></WindowTitleBar>
         <div
           className={`flex-auto ${WINDOW_CONTENT_CLASSNAME}`}
           style={{ cursor: "initial" }}

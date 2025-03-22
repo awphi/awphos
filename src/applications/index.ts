@@ -26,7 +26,6 @@ interface ApplicationsRegistry {
   hasComponent(definitionId: string): boolean;
   getComponent(definitionId: string): React.FC;
 }
-
 const applications: ApplicationsRegistry = {
   // application definition registry
   definitions: {

@@ -9,6 +9,7 @@ export interface ApplicationProps {
   title: string;
   size: Dimensions;
   topLeft: Position;
+  maximized: boolean;
 }
 
 /**
@@ -55,6 +56,7 @@ export const activeApplicationsSlice = createSlice({
             y: 100,
           },
           title: def.name,
+          maximized: false,
         },
       };
       state.applications[app.applicationId] = app;
@@ -73,11 +75,12 @@ export const activeApplicationsSlice = createSlice({
       } = action;
 
       if (applicationId in state.applications) {
-        for (const k in props) {
-          // not very typesafe but fine for now
-          const key = k as keyof ApplicationProps;
-          if (props[key] !== undefined) {
-            state.applications[applicationId].props[key] = props[key] as any;
+        const baseProps = state.applications[applicationId].props as any;
+
+        // Object.assign but without overwriting existing props with undefined values
+        for (const [k, v] of Object.entries(props)) {
+          if (v !== undefined) {
+            baseProps[k] = v;
           }
         }
       }

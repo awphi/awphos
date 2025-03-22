@@ -1,9 +1,6 @@
-import useAppDispatch from "@/hooks/useAppDispatch";
-import { closeApplication } from "@/store/applications";
-import { useCallback } from "react";
-import { WindowProps } from "..";
 import clsx from "clsx";
-import { X, Maximize2, Minus } from "lucide-react";
+import { X, Maximize2, Minimize2, Minus } from "lucide-react";
+import { useWindow } from "@/hooks/useWindow";
 
 export const TITLE_BAR_HEIGHT = 32;
 
@@ -21,22 +18,13 @@ function WindowTitleBarButton(props: React.ComponentProps<"button">) {
   );
 }
 
-export default function WindowTitleBar({ application }: WindowProps) {
-  const { applicationId, props } = application;
-
-  const dispatch = useAppDispatch();
-
-  const close = useCallback(
-    () => dispatch(closeApplication(applicationId)),
-    [applicationId]
-  );
-
-  const maximize = useCallback(() => {
-    // TODO
-  }, []);
-  const minimize = useCallback(() => {
-    // TODO
-  }, []);
+export default function WindowTitleBar() {
+  const {
+    application: { props },
+    setMinimized,
+    close,
+    setMaximized,
+  } = useWindow();
 
   return (
     <div
@@ -45,11 +33,15 @@ export default function WindowTitleBar({ application }: WindowProps) {
     >
       <p>{props.title}</p>
       <div className="h-full flex">
-        <WindowTitleBarButton onClick={minimize}>
+        <WindowTitleBarButton onClick={() => setMinimized(true)}>
           <Minus width={18} />
         </WindowTitleBarButton>
-        <WindowTitleBarButton onClick={maximize}>
-          <Maximize2 width={16} />
+        <WindowTitleBarButton onClick={() => setMaximized(!props.maximized)}>
+          {props.maximized ? (
+            <Minimize2 width={16} />
+          ) : (
+            <Maximize2 width={16} />
+          )}
         </WindowTitleBarButton>
         <WindowTitleBarButton className="hover:bg-red-500/75" onClick={close}>
           <X width={18} />

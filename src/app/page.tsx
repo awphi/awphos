@@ -24,8 +24,9 @@ export default function Home() {
         src={wallpaperMountain1}
       ></Image>
       <div className="w-full h-full flex flex-col">
-        <Windows />
-        <Desktop />
+        <Desktop>
+          <Windows />
+        </Desktop>
         <TaskBar />
       </div>
     </Provider>

@@ -41,13 +41,14 @@ export const activeApplicationsSlice = createSlice({
         return;
       }
 
+      // TODO probably need some way of specifying arguments to the application - just some object?
       const app: Application = {
         applicationId: crypto.randomUUID(),
         definitionId: payload,
         props: {
           size: {
-            width: def.defaultHeight ?? 500,
-            height: def.defaultWidth ?? 700,
+            width: def.defaultWidth ?? 500,
+            height: def.defaultHeight ?? 300,
           },
           topLeft: {
             x: 100,

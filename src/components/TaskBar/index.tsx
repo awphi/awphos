@@ -1,4 +1,4 @@
-import { useDate } from "@/hooks/useNow";
+import { useDate } from "@/hooks/useDate";
 import { useMemo } from "react";
 import TaskBarIcon from "./Icon";
 

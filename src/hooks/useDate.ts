@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export interface UseNowOptions {
+export interface UseDateOptions {
   /**
    * Update interval in ms.
    * @defaultValue 1000
@@ -8,7 +8,7 @@ export interface UseNowOptions {
   updateInterval?: number;
 }
 
-export function useDate(opts?: UseNowOptions) {
+export function useDate(opts?: UseDateOptions) {
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {

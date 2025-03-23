@@ -2,10 +2,11 @@ import { useCallback, useContext, useMemo } from "react";
 import useAppDispatch from "./useAppDispatch";
 import { WindowContext } from "@/components/Window";
 import useAppSelector from "./useAppSelector";
-import applications from "@/applications";
+import applicationsRegistry from "@/applications";
 import {
   ApplicationProps,
   closeApplication,
+  focusApplication,
   setApplicationProps,
 } from "@/store/applications";
 
@@ -14,12 +15,11 @@ export function useWindow() {
   const application = useAppSelector(
     (state) => state.applications.applications[applicationId]
   );
-  const { definitionId, props } = application;
-
+  const { definitionId } = application;
   const dispatch = useAppDispatch();
 
   const Component = useMemo(
-    () => applications.getComponent(definitionId),
+    () => applicationsRegistry.definitions[definitionId].component,
     [definitionId]
   );
 
@@ -45,7 +45,11 @@ export function useWindow() {
   }, []);
 
   const setMinimized = useCallback((state: boolean) => {
-    // TODO
+    setProps({ minimized: state });
+  }, []);
+
+  const focus = useCallback(() => {
+    dispatch(focusApplication(applicationId));
   }, []);
 
   return {
@@ -54,7 +58,7 @@ export function useWindow() {
     close,
     setProps,
     setMaximized,
-
     setMinimized,
+    focus,
   };
 }

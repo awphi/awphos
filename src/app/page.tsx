@@ -4,7 +4,6 @@ import Desktop from "@/components/Desktop";
 import TaskBar from "@/components/TaskBar";
 import { store } from "../store";
 import { Provider } from "react-redux";
-import Windows from "@/components/Windows";
 import Image from "next/image";
 
 // TODO more wallpapers once we have user preferences system
@@ -24,9 +23,7 @@ export default function Home() {
         src={wallpaperMountain1}
       ></Image>
       <div className="w-full h-full flex flex-col">
-        <Desktop>
-          <Windows />
-        </Desktop>
+        <Desktop />
         <TaskBar />
       </div>
     </Provider>

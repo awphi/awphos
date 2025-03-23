@@ -19,6 +19,7 @@ function WindowContent() {
   const {
     application: { props },
     setProps,
+    focus,
     Component,
   } = useWindow();
   const [interacting, setInteracting] = useState(false);
@@ -57,9 +58,12 @@ function WindowContent() {
       enableResizing={!props.maximized}
       cancel={`.${WINDOW_CONTENT_CLASSNAME}`}
       style={{ cursor: "initial" }}
-      className={clsx({ "transition-all": !interacting })}
+      className={clsx({
+        "transition-all": !interacting,
+        "opacity-0": props.minimized,
+      })}
     >
-      <div className="flex flex-col h-full overflow-hidden">
+      <div onClick={focus} className="flex flex-col h-full overflow-hidden">
         <WindowTitleBar></WindowTitleBar>
         <div className={`flex-auto ${WINDOW_CONTENT_CLASSNAME}`}>
           <Component />

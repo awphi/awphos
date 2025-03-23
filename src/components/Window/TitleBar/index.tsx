@@ -28,7 +28,7 @@ export default function WindowTitleBar() {
 
   return (
     <div
-      className="bg-neutral-800 flex items-center select-none pl-2 justify-between"
+      className="bg-neutral-700 flex items-center select-none pl-2 justify-between"
       style={{ minHeight: TITLE_BAR_HEIGHT }}
     >
       <p>{props.title}</p>

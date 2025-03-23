@@ -1,8 +1,11 @@
 import DummyApp from "@/applications/DummyApp";
+import { AppWindowIcon } from "lucide-react";
 import React from "react";
 
 export interface ApplicationDefinition {
   name: string;
+  component: React.FC;
+  icon: React.FC;
   /**
    * Number of active windows allowed for this application
    * @defaultValue Infinity
@@ -18,29 +21,20 @@ export interface ApplicationDefinition {
    * @defaultValue 500
    */
   defaultHeight?: number;
-  component?: React.FC;
 }
 
 interface ApplicationsRegistry {
   definitions: Record<string, ApplicationDefinition>;
-  hasComponent(definitionId: string): boolean;
-  getComponent(definitionId: string): React.FC;
 }
-const applications: ApplicationsRegistry = {
+const applicationsRegistry: ApplicationsRegistry = {
   // application definition registry
   definitions: {
     "dummy-app": {
       name: "Dummy App",
       component: DummyApp,
+      icon: AppWindowIcon,
     },
-  },
-  // helper methods
-  hasComponent(id: string) {
-    return applications.definitions[id].component !== undefined;
-  },
-  getComponent(id: string) {
-    return applications.definitions[id].component ?? React.Fragment;
   },
 } as const;
 
-export default applications;
+export default applicationsRegistry;

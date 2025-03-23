@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import applications from "../applications";
+import applicationsRegistry from "../applications";
 import { Dimensions, Position } from "@/types";
+import { removeFromArray } from "@/utils";
 
 /**
  * Mutable properties of a running application
@@ -10,6 +11,7 @@ export interface ApplicationProps {
   size: Dimensions;
   topLeft: Position;
   maximized: boolean;
+  minimized: boolean;
 }
 
 /**
@@ -33,11 +35,11 @@ export const activeApplicationsSlice = createSlice({
   name: "applications",
   initialState: {
     applications: Object.create(null) as Record<string, Application>,
-    applicationIds: [] as string[], // maintained separately for easy + performant iteration
+    focusQueue: [] as (string | null)[],
   },
   reducers: {
     openApplication(state, { payload }: PayloadAction<string>) {
-      const def = applications.definitions[payload];
+      const def = applicationsRegistry.definitions[payload];
       if (def === undefined) {
         return;
       }
@@ -57,16 +59,16 @@ export const activeApplicationsSlice = createSlice({
           },
           title: def.name,
           maximized: false,
+          minimized: false,
         },
       };
       state.applications[app.applicationId] = app;
-      state.applicationIds.push(app.applicationId);
+      state.focusQueue.push(app.applicationId);
     },
     closeApplication(state, { payload }: PayloadAction<string>) {
       if (payload in state.applications) {
         delete state.applications[payload];
-        const idx = state.applicationIds.indexOf(payload);
-        state.applicationIds.splice(idx, 1);
+        removeFromArray(state.focusQueue, payload);
       }
     },
     setApplicationProps(state, action: PayloadAction<ApplicationPropsUpdate>) {
@@ -83,11 +85,24 @@ export const activeApplicationsSlice = createSlice({
             baseProps[k] = v;
           }
         }
+
+        // always remove a minimized application from the focus queue
+        if (props.minimized === true) {
+          removeFromArray(state.focusQueue, applicationId);
+        }
       }
+    },
+    focusApplication(state, { payload }: PayloadAction<string | null>) {
+      removeFromArray(state.focusQueue, payload);
+      state.focusQueue.push(payload);
     },
   },
 });
 
-export const { openApplication, closeApplication, setApplicationProps } =
-  activeApplicationsSlice.actions;
+export const {
+  openApplication,
+  closeApplication,
+  setApplicationProps,
+  focusApplication,
+} = activeApplicationsSlice.actions;
 export default activeApplicationsSlice.reducer;

@@ -1,9 +1,12 @@
 import useAppDispatch from "@/hooks/useAppDispatch";
-import { openApplication } from "@/store/applications";
+import useAppSelector from "@/hooks/useAppSelector";
+import { focusApplication, openApplication } from "@/store/applications";
 import clsx from "clsx";
+import Window from "../Window";
 import { useEffect } from "react";
 
-export default function Desktop(props: React.ComponentProps<"div">) {
+export default function Desktop() {
+  const { applications } = useAppSelector((state) => state.applications);
   const dispatch = useAppDispatch();
 
   // TODO temporary - remove
@@ -13,10 +16,12 @@ export default function Desktop(props: React.ComponentProps<"div">) {
 
   return (
     <div
-      {...props}
-      className={clsx(props.className, "w-full flex-auto relative")}
+      className={clsx("w-full flex-auto relative")}
+      onClick={() => dispatch(focusApplication(null))}
     >
-      {props.children}
+      {Object.keys(applications).map((id) => (
+        <Window key={id} application={applications[id]}></Window>
+      ))}
     </div>
   );
 }

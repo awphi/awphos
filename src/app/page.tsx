@@ -5,13 +5,16 @@ import TaskBar from "@/components/TaskBar";
 import { store } from "../store";
 import { Provider } from "react-redux";
 import Image from "next/image";
+import { useFocus } from "@/hooks/useFocus";
 
 // TODO more wallpapers once we have user preferences system
 import wallpaperMountain1 from "../../public/wallpapers/mountain-1.jpg";
 
-export default function Home() {
+function HomeContent() {
+  const { focus } = useFocus();
+
   return (
-    <Provider store={store}>
+    <>
       <Image
         className=" -z-50 pointer-events-none"
         alt="Wallpaper image"
@@ -22,10 +25,21 @@ export default function Home() {
         }}
         src={wallpaperMountain1}
       ></Image>
-      <div className="w-full h-full flex flex-col">
+      <div
+        className="w-full h-full flex flex-col"
+        onPointerDown={() => focus(null)}
+      >
         <Desktop />
         <TaskBar />
       </div>
+    </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Provider store={store}>
+      <HomeContent />
     </Provider>
   );
 }

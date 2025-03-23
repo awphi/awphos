@@ -18,7 +18,7 @@ export default function TaskBar() {
   );
 
   return (
-    <div className="w-full flex bg-neutral-700/50 border-t gap-1 backdrop-blur-sm border-neutral-600/50 px-3 pb-1.5 py-1 z-10">
+    <div className="w-full flex bg-neutral-700/50 border-t gap-1 backdrop-blur-sm border-neutral-600/50 px-3 pb-1.5 py-1 z-10 select-none">
       <TaskBarIcon>
         <div
           title="Start"

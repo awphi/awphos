@@ -1,5 +1,11 @@
 import { Application } from "@/store/applications";
-import React, { createContext, useMemo, useState } from "react";
+import React, {
+  createContext,
+  MouseEvent,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { Rnd } from "react-rnd";
 import WindowTitleBar, { TITLE_BAR_HEIGHT } from "./TitleBar";
 import { useWindow } from "@/hooks/useWindow";
@@ -32,6 +38,14 @@ function WindowContent() {
     return props.maximized ? { x: 0, y: 0 } : props.topLeft;
   }, [props.maximized, props.topLeft]);
 
+  const handlePointerDown = useCallback(
+    (e: MouseEvent) => {
+      focus();
+      e.stopPropagation();
+    },
+    [focus]
+  );
+
   return (
     <Rnd
       size={size}
@@ -63,7 +77,10 @@ function WindowContent() {
         "opacity-0": props.minimized,
       })}
     >
-      <div onClick={focus} className="flex flex-col h-full overflow-hidden">
+      <div
+        onPointerDown={handlePointerDown}
+        className="flex flex-col h-full overflow-hidden"
+      >
         <WindowTitleBar></WindowTitleBar>
         <div className={`flex-auto ${WINDOW_CONTENT_CLASSNAME}`}>
           <Component />

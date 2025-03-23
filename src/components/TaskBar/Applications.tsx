@@ -1,16 +1,12 @@
-import applicationsRegistry from "@/applications";
 import useAppSelector from "@/hooks/useAppSelector";
-import TaskBarIcon from "../Icon";
 import { Application } from "@/store/applications";
 import { useMemo } from "react";
+import TaskBarApplicationIcon, {
+  TaskBarApplicationIconProps,
+} from "./ApplicationIcon";
 
 // TODO eventually replace with some global state
 const pinnedApplications = ["dummy-app"] as const;
-
-interface TaskBarApplicationIconProps {
-  definitionId: string;
-  applicationIds: string[];
-}
 
 function getTaskBarApplications(
   applications: Record<string, Application>
@@ -42,32 +38,17 @@ function getTaskBarApplications(
 }
 
 export default function TaskBarApplications() {
-  const { applications } = useAppSelector((state) => state.applications);
+  const applications = useAppSelector(
+    (state) => state.applications.applications
+  );
   const taskbarApplications = useMemo(
     () => getTaskBarApplications(applications),
     [applications]
   );
 
-  // TODO clicking action based on: minimized state, focus state and window count
-  // TODO styling based on: minimized state, focus state and window count
-  // TODO context menu - simple for now: new window, close all windows
   return (
     <div className="flex flex-auto gap-1">
-      {taskbarApplications.map(({ definitionId }) => {
-        const def = applicationsRegistry.definitions[definitionId];
-        const Icon = def.icon;
-
-        return (
-          <TaskBarIcon key={definitionId}>
-            <div
-              title={def.name}
-              className="h-full aspect-square flex items-center justify-center"
-            >
-              <Icon />
-            </div>
-          </TaskBarIcon>
-        );
-      })}
+      {taskbarApplications.map(TaskBarApplicationIcon)}
     </div>
   );
 }

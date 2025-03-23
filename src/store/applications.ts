@@ -93,8 +93,15 @@ export const activeApplicationsSlice = createSlice({
       }
     },
     focusApplication(state, { payload }: PayloadAction<string | null>) {
-      removeFromArray(state.focusQueue, payload);
-      state.focusQueue.push(payload);
+      if (payload === null || payload in state.applications) {
+        removeFromArray(state.focusQueue, payload);
+        state.focusQueue.push(payload);
+
+        // always unminize an application when focusing it
+        if (payload !== null && state.applications[payload].props.minimized) {
+          state.applications[payload].props.minimized = false;
+        }
+      }
     },
   },
 });

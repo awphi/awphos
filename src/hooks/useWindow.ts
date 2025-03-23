@@ -9,6 +9,7 @@ import {
   focusApplication,
   setApplicationProps,
 } from "@/store/applications";
+import { useFocus } from "./useFocus";
 
 export function useWindow() {
   const { applicationId } = useContext(WindowContext);
@@ -17,6 +18,7 @@ export function useWindow() {
   );
   const { definitionId } = application;
   const dispatch = useAppDispatch();
+  const { focus: focusApp } = useFocus();
 
   const Component = useMemo(
     () => applicationsRegistry.definitions[definitionId].component,
@@ -48,9 +50,7 @@ export function useWindow() {
     setProps({ minimized: state });
   }, []);
 
-  const focus = useCallback(() => {
-    dispatch(focusApplication(applicationId));
-  }, []);
+  const focus = useCallback(() => focusApp(applicationId), [applicationId]);
 
   return {
     application,

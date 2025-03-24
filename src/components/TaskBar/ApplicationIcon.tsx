@@ -56,7 +56,7 @@ export default function TaskBarApplicationIcon({
         <div
           className={clsx(
             "absolute bottom-0.5 w-2 h-1 rounded-sm transition-all",
-            isSomeInstanceFocused ? "bg-purple-500" : "bg-neutral-400",
+            isSomeInstanceFocused ? "bg-primary-400" : "bg-neutral-400",
             {
               "opacity-0": applicationIds.length === 0,
               "w-4": isSomeInstanceFocused,

@@ -19,14 +19,9 @@ export function useFocus() {
     [focusQueue]
   );
 
-  const focus = useCallback(
-    (applicationId: string | null) => {
-      if (!isFocused(applicationId)) {
-        dispatch(focusApplication(applicationId));
-      }
-    },
-    [isFocused]
-  );
+  const focus = useCallback((applicationId: string | null) => {
+    dispatch(focusApplication(applicationId));
+  }, []);
 
   return {
     focus,

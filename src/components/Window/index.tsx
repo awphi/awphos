@@ -76,11 +76,9 @@ function WindowContent() {
         "transition-all": !interacting,
         "opacity-0": props.minimized,
       })}
+      onPointerDown={handlePointerDown}
     >
-      <div
-        onPointerDown={handlePointerDown}
-        className="flex flex-col h-full overflow-hidden"
-      >
+      <div className="flex flex-col h-full overflow-hidden">
         <WindowTitleBar></WindowTitleBar>
         <div className={`flex-auto ${WINDOW_CONTENT_CLASSNAME}`}>
           <Component />

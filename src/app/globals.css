@@ -5,6 +5,20 @@
   --foreground: #ededed;
 }
 
+@theme {
+  --color-primary-50: #edecf8;
+  --color-primary-100: #dadaf1;
+  --color-primary-200: #b5b4e4;
+  --color-primary-300: #908fd6;
+  --color-primary-400: #6b6ac8;
+  --color-primary-500: #4544ba;
+  --color-primary-600: #383795;
+  --color-primary-700: #2a2970;
+  --color-primary-800: #1c1b4b;
+  --color-primary-900: #0e0e25;
+  --color-primary-950: #070713;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

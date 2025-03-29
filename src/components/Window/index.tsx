@@ -4,6 +4,7 @@ import React, {
   MouseEvent,
   useCallback,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { Rnd } from "react-rnd";
@@ -30,6 +31,8 @@ function WindowContent() {
   } = useWindow();
   const [interacting, setInteracting] = useState(false);
 
+  const rndRef = useRef<Rnd>(null);
+
   const size = useMemo(() => {
     return props.maximized ? { width: "100%", height: "100%" } : props.size;
   }, [props.maximized, props.size]);
@@ -38,7 +41,7 @@ function WindowContent() {
     return props.maximized ? { x: 0, y: 0 } : props.topLeft;
   }, [props.maximized, props.topLeft]);
 
-  const handlePointerDown = useCallback(
+  const handleClick = useCallback(
     (e: MouseEvent) => {
       focus();
       e.stopPropagation();
@@ -49,6 +52,8 @@ function WindowContent() {
   return (
     <Rnd
       size={size}
+      ref={rndRef}
+      bounds={rndRef.current?.getParent()}
       position={topLeft}
       minHeight={TITLE_BAR_HEIGHT}
       onDragStop={(_, { x, y }) => {
@@ -76,7 +81,7 @@ function WindowContent() {
         "transition-all": !interacting,
         "opacity-0": props.minimized,
       })}
-      onPointerDown={handlePointerDown}
+      onClick={handleClick}
     >
       <div className="flex flex-col h-full overflow-hidden">
         <WindowTitleBar></WindowTitleBar>

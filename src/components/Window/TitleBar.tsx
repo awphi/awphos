@@ -24,11 +24,15 @@ export default function WindowTitleBar() {
     setMinimized,
     close,
     setMaximized,
+    isFocused,
   } = useWindow();
 
   return (
     <div
-      className="bg-neutral-700 flex items-center select-none pl-2 justify-between"
+      className={clsx(
+        "flex items-center select-none pl-2 justify-between",
+        isFocused ? "bg-neutral-800" : "bg-neutral-700"
+      )}
       style={{ minHeight: TITLE_BAR_HEIGHT }}
     >
       <p>{props.title}</p>

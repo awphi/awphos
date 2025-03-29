@@ -18,7 +18,7 @@ export function useWindow() {
   );
   const { definitionId } = application;
   const dispatch = useAppDispatch();
-  const { focus: focusApp } = useFocus();
+  const { focus: focusApp, isFocused: isAppFocused } = useFocus();
 
   const Component = useMemo(
     () => applicationsRegistry.definitions[definitionId].component,
@@ -50,7 +50,15 @@ export function useWindow() {
     setProps({ minimized: state });
   }, []);
 
-  const focus = useCallback(() => focusApp(applicationId), [applicationId]);
+  const focus = useCallback(
+    () => focusApp(applicationId),
+    [applicationId, focusApp]
+  );
+
+  const isFocused = useMemo(
+    () => isAppFocused(applicationId),
+    [applicationId, isAppFocused]
+  );
 
   return {
     application,
@@ -60,5 +68,6 @@ export function useWindow() {
     setMaximized,
     setMinimized,
     focus,
+    isFocused,
   };
 }

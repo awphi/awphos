@@ -1,8 +1,8 @@
 import applicationsRegistry from "@/applications";
 import TaskBarIcon from "./Icon";
-import { useCallback, useMemo } from "react";
+import { MouseEvent, useCallback, useMemo } from "react";
 import useAppDispatch from "@/hooks/useAppDispatch";
-import { openApplication } from "@/store/applications";
+import { openApplication, setApplicationProps } from "@/store/applications";
 import { useFocus } from "@/hooks/useFocus";
 import clsx from "clsx";
 
@@ -25,17 +25,30 @@ export default function TaskBarApplicationIcon({
     [isFocused, applicationIds]
   );
 
-  const handleClick = useCallback(() => {
-    if (applicationIds.length === 0) {
-      dispatch(openApplication(definitionId));
-    } else if (applicationIds.length === 1) {
-      if (!isSomeInstanceFocused) {
-        focus(applicationIds[0]);
+  const handleClick = useCallback(
+    (e: MouseEvent) => {
+      if (applicationIds.length === 0) {
+        dispatch(openApplication(definitionId));
+      } else if (applicationIds.length === 1) {
+        if (!isSomeInstanceFocused) {
+          focus(applicationIds[0]);
+        } else {
+          dispatch(
+            setApplicationProps({
+              applicationId: applicationIds[0],
+              props: { minimized: true },
+            })
+          );
+        }
+      } else {
+        // TODO open context menu listing all active windows - clicking one will focus it
       }
-    } else {
-      // TODO open context menu listing all active windows - clicking one will focus it
-    }
-  }, [definitionId, applicationIds, isSomeInstanceFocused]);
+
+      // prevent click being captured by parent which will focus(null)
+      e.stopPropagation();
+    },
+    [definitionId, applicationIds, isSomeInstanceFocused]
+  );
 
   // TODO right click context menu to close all or open a new instance of this application
 

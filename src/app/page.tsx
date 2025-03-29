@@ -27,7 +27,8 @@ function HomeContent() {
       ></Image>
       <div
         className="w-full h-full flex flex-col"
-        onPointerDown={() => focus(null)}
+        onClick={() => focus(null)}
+        onContextMenu={(e) => e.preventDefault()}
       >
         <Desktop />
         <TaskBar />

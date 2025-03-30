@@ -1,4 +1,5 @@
 import DummyApp from "@/applications/DummyApp";
+import { Dimensions, Position } from "@/types";
 import { AppWindowIcon } from "lucide-react";
 import React from "react";
 
@@ -12,15 +13,15 @@ export interface ApplicationDefinition {
    */
   instanceLimit?: number;
   /**
-   * Default window width when opening a new instance of this application
-   * @defaultValue 700
+   * Default window size.
+   * @defaultValue (500, 300)
    */
-  defaultWidth?: number;
+  defaultSize?: Dimensions;
   /**
-   * Default window height when opening a new instance of this application
-   * @defaultValue 500
+   * Default window position.
+   * @defaultValue (100, 100)
    */
-  defaultHeight?: number;
+  defaultPosition?: Position;
 }
 
 interface ApplicationsRegistry {

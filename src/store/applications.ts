@@ -31,11 +31,21 @@ export interface ApplicationPropsUpdate {
   props: Partial<ApplicationProps>;
 }
 
+const defaultWindowSize: Dimensions = {
+  width: 500,
+  height: 300,
+};
+
+const defaultWindowPosition: Position = {
+  x: 100,
+  y: 100,
+};
+
 export const activeApplicationsSlice = createSlice({
   name: "applications",
   initialState: {
     applications: Object.create(null) as Record<string, Application>,
-    focusQueue: [] as (string | null)[],
+    focusQueue: [null] as (string | null)[],
   },
   reducers: {
     openApplication(state, { payload }: PayloadAction<string>) {
@@ -49,14 +59,8 @@ export const activeApplicationsSlice = createSlice({
         applicationId: crypto.randomUUID(),
         definitionId: payload,
         props: {
-          size: {
-            width: def.defaultWidth ?? 500,
-            height: def.defaultHeight ?? 300,
-          },
-          topLeft: {
-            x: 100,
-            y: 100,
-          },
+          size: { ...(def.defaultSize ?? defaultWindowSize) },
+          topLeft: { ...(def.defaultPosition ?? defaultWindowPosition) },
           title: def.name,
           maximized: false,
           minimized: false,

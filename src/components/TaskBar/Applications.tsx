@@ -6,7 +6,7 @@ import TaskBarApplicationIcon, {
 } from "./ApplicationIcon";
 
 // TODO eventually replace with some global state
-const pinnedApplications = ["dummy-app"] as const;
+const pinnedApplications = ["wikipedia", "dummy-app"] as const;
 
 function getTaskBarApplications(
   applications: Record<string, Application>

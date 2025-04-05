@@ -1,15 +1,14 @@
 import { useCallback, useContext, useMemo } from "react";
 import useAppDispatch from "./useAppDispatch";
-import { WindowContext } from "@/components/Window";
 import useAppSelector from "./useAppSelector";
 import applicationsRegistry from "@/applications";
 import {
   ApplicationProps,
   closeApplication,
-  focusApplication,
   setApplicationProps,
 } from "@/store/applications";
 import { useFocus } from "./useFocus";
+import { WindowContext } from "@/components/Window/constants";
 
 export function useWindow() {
   const { applicationId } = useContext(WindowContext);
@@ -18,7 +17,7 @@ export function useWindow() {
   );
   const { definitionId } = application;
   const dispatch = useAppDispatch();
-  const { focus: focusApp, isFocused: isAppFocused } = useFocus();
+  const { focus: focusApp, isFocused: isAppFocused, focusQueue } = useFocus();
 
   const Component = useMemo(
     () => applicationsRegistry.definitions[definitionId].component,
@@ -42,13 +41,15 @@ export function useWindow() {
     [applicationId]
   );
 
-  const setMaximized = useCallback((state: boolean) => {
-    setProps({ maximized: state });
-  }, []);
+  const setMaximized = useCallback(
+    (state: boolean) => setProps({ maximized: state }),
+    [setProps]
+  );
 
-  const setMinimized = useCallback((state: boolean) => {
-    setProps({ minimized: state });
-  }, []);
+  const setMinimized = useCallback(
+    (state: boolean) => setProps({ minimized: state }),
+    [setProps]
+  );
 
   const focus = useCallback(
     () => focusApp(applicationId),
@@ -60,6 +61,11 @@ export function useWindow() {
     [applicationId, isAppFocused]
   );
 
+  const zIndex = useMemo(
+    () => focusQueue.indexOf(applicationId),
+    [focusQueue, applicationId]
+  );
+
   return {
     application,
     Component,
@@ -69,5 +75,6 @@ export function useWindow() {
     setMinimized,
     focus,
     isFocused,
+    zIndex,
   };
 }

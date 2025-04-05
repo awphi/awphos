@@ -21,6 +21,8 @@ export interface Application {
   definitionId: string;
   applicationId: string;
   props: ApplicationProps;
+  // TODO could be a more specific type?
+  args: Record<string, any>;
 }
 
 /**
@@ -29,6 +31,11 @@ export interface Application {
 export interface ApplicationPropsUpdate {
   applicationId: string;
   props: Partial<ApplicationProps>;
+}
+
+export interface ApplicationOpenArgs {
+  definitionId: string;
+  args?: Record<string, any>;
 }
 
 const defaultWindowSize: Dimensions = {
@@ -48,16 +55,16 @@ export const activeApplicationsSlice = createSlice({
     focusQueue: [null] as (string | null)[],
   },
   reducers: {
-    openApplication(state, { payload }: PayloadAction<string>) {
-      const def = applicationsRegistry.definitions[payload];
+    openApplication(state, { payload }: PayloadAction<ApplicationOpenArgs>) {
+      const { definitionId, args = {} } = payload;
+      const def = applicationsRegistry.definitions[definitionId];
       if (def === undefined) {
         return;
       }
 
-      // TODO probably need some way of specifying arguments to the application - just some object?
       const app: Application = {
         applicationId: crypto.randomUUID(),
-        definitionId: payload,
+        definitionId,
         props: {
           size: { ...(def.defaultSize ?? defaultWindowSize) },
           topLeft: { ...(def.defaultPosition ?? defaultWindowPosition) },
@@ -65,6 +72,7 @@ export const activeApplicationsSlice = createSlice({
           maximized: false,
           minimized: false,
         },
+        args,
       };
       state.applications[app.applicationId] = app;
       state.focusQueue.push(app.applicationId);

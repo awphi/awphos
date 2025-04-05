@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@icons-pack/react-simple-icons": "^12.4.0",
     "@reduxjs/toolkit": "^2.6.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.483.0",

@@ -1,6 +1,5 @@
 import { Application } from "@/store/applications";
 import React, {
-  createContext,
   MouseEvent,
   useCallback,
   useMemo,
@@ -8,19 +7,18 @@ import React, {
   useState,
 } from "react";
 import { Rnd } from "react-rnd";
-import WindowTitleBar, { TITLE_BAR_HEIGHT } from "./TitleBar";
+import WindowTitleBar from "./TitleBar";
 import { useWindow } from "@/hooks/useWindow";
 import clsx from "clsx";
+import {
+  TITLE_BAR_HEIGHT,
+  WINDOW_CONTENT_CLASSNAME,
+  WindowContext,
+} from "./constants";
 
 export interface WindowProps extends React.PropsWithChildren {
   application: Application;
 }
-
-export const WindowContext = createContext<{ applicationId: string }>({
-  applicationId: "",
-});
-
-const WINDOW_CONTENT_CLASSNAME = "awphos-window-content";
 
 function WindowContent() {
   const {
@@ -28,6 +26,7 @@ function WindowContent() {
     setProps,
     focus,
     Component,
+    zIndex,
   } = useWindow();
   const [interacting, setInteracting] = useState(false);
 
@@ -53,7 +52,6 @@ function WindowContent() {
     <Rnd
       size={size}
       ref={rndRef}
-      bounds={rndRef.current?.getParent()}
       position={topLeft}
       minHeight={TITLE_BAR_HEIGHT}
       onDragStop={(_, { x, y }) => {
@@ -76,16 +74,19 @@ function WindowContent() {
       disableDragging={props.maximized}
       enableResizing={!props.maximized}
       cancel={`.${WINDOW_CONTENT_CLASSNAME}`}
-      style={{ cursor: "initial" }}
+      style={{ cursor: "initial", zIndex }}
       className={clsx({
         "transition-all": !interacting,
         "opacity-0": props.minimized,
+        "pointer-events-none": props.minimized,
       })}
       onClick={handleClick}
     >
       <div className="flex flex-col h-full overflow-hidden">
         <WindowTitleBar></WindowTitleBar>
-        <div className={`flex-auto ${WINDOW_CONTENT_CLASSNAME}`}>
+        <div
+          className={`flex-auto ${WINDOW_CONTENT_CLASSNAME} overflow-scroll rounded-b-sm`}
+        >
           <Component />
         </div>
       </div>

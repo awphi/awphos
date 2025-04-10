@@ -62,6 +62,14 @@ export const activeApplicationsSlice = createSlice({
         return;
       }
 
+      const existingInstances = Object.values(state.applications).filter(
+        (v) => v.definitionId === definitionId
+      );
+
+      if (existingInstances.length >= (def.instanceLimit ?? Infinity)) {
+        return;
+      }
+
       const app: Application = {
         applicationId: crypto.randomUUID(),
         definitionId,

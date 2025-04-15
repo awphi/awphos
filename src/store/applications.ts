@@ -36,6 +36,7 @@ export interface ApplicationPropsUpdate {
 export interface ApplicationOpenArgs {
   definitionId: string;
   args?: Record<string, any>;
+  props?: Partial<ApplicationProps>;
 }
 
 const defaultWindowSize: Size = {
@@ -56,7 +57,7 @@ export const activeApplicationsSlice = createSlice({
   },
   reducers: {
     openApplication(state, { payload }: PayloadAction<ApplicationOpenArgs>) {
-      const { definitionId, args = {} } = payload;
+      const { definitionId, args = {}, props: baseProps = {} } = payload;
       const def = applicationsRegistry.definitions[definitionId];
       if (def === undefined) {
         return;
@@ -70,16 +71,18 @@ export const activeApplicationsSlice = createSlice({
         return;
       }
 
+      const props: ApplicationProps = Object.assign({}, baseProps, {
+        size: { ...(def.defaultSize ?? defaultWindowSize) },
+        topLeft: { ...(def.defaultPosition ?? defaultWindowPosition) },
+        title: def.name,
+        maximized: false,
+        minimized: false,
+      });
+
       const app: Application = {
         applicationId: crypto.randomUUID(),
         definitionId,
-        props: {
-          size: { ...(def.defaultSize ?? defaultWindowSize) },
-          topLeft: { ...(def.defaultPosition ?? defaultWindowPosition) },
-          title: def.name,
-          maximized: false,
-          minimized: false,
-        },
+        props,
         args,
       };
       state.applications[app.applicationId] = app;

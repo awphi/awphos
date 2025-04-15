@@ -33,7 +33,7 @@ export default function WindowTitleBar() {
   return (
     <div
       className={clsx(
-        "flex items-center select-none pl-2 justify-between rounded-t-sm",
+        "flex items-center select-none pl-2 justify-between",
         isFocused ? "bg-neutral-800" : "bg-neutral-700"
       )}
       style={{ minHeight: TITLE_BAR_HEIGHT }}

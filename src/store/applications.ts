@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import applicationsRegistry from "../applications";
-import { Dimensions, Position } from "@/types";
+import { Size, Position } from "@/types";
 import { removeFromArray } from "@/utils";
 
 /**
@@ -8,7 +8,7 @@ import { removeFromArray } from "@/utils";
  */
 export interface ApplicationProps {
   title: string;
-  size: Dimensions;
+  size: Size;
   topLeft: Position;
   maximized: boolean;
   minimized: boolean;
@@ -38,7 +38,7 @@ export interface ApplicationOpenArgs {
   args?: Record<string, any>;
 }
 
-const defaultWindowSize: Dimensions = {
+const defaultWindowSize: Size = {
   width: 500,
   height: 300,
 };

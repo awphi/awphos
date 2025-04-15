@@ -1,6 +1,6 @@
-export interface Dimensions {
-  width: number;
-  height: number;
+export interface Size {
+  width: string | number;
+  height: string | number;
 }
 
 export interface Position {

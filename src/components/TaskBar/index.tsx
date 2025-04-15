@@ -23,6 +23,7 @@ export default function TaskBar() {
       style={{ zIndex: 1_000_000 }}
     >
       <TaskBarIcon>
+        {/** TODO open or toggle minimization of the start-menu app on click */}
         <div
           title="Start"
           className="h-full aspect-square relative flex items-center justify-center"

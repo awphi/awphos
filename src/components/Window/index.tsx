@@ -25,7 +25,7 @@ function WindowContent() {
     application: { props },
     setProps,
     focus,
-    Component,
+    definition: { component: Component, showTitleBar = true },
     zIndex,
   } = useWindow();
   const [interacting, setInteracting] = useState(false);
@@ -53,7 +53,7 @@ function WindowContent() {
       size={size}
       ref={rndRef}
       position={topLeft}
-      minHeight={TITLE_BAR_HEIGHT}
+      minHeight={showTitleBar ? TITLE_BAR_HEIGHT : 0}
       onDragStop={(_, { x, y }) => {
         setProps({ topLeft: { x, y } });
         setInteracting(false);
@@ -83,9 +83,12 @@ function WindowContent() {
       onClick={handleClick}
     >
       <div className="flex flex-col h-full overflow-hidden">
-        <WindowTitleBar></WindowTitleBar>
+        {showTitleBar ? <WindowTitleBar /> : null}
         <div
-          className={`flex-auto ${WINDOW_CONTENT_CLASSNAME} overflow-scroll rounded-b-sm`}
+          className={clsx(
+            "flex-auto overflow-scroll",
+            WINDOW_CONTENT_CLASSNAME
+          )}
         >
           <Component />
         </div>

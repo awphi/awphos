@@ -19,8 +19,8 @@ export function useWindow() {
   const dispatch = useAppDispatch();
   const { focus: focusApp, isFocused: isAppFocused, focusQueue } = useFocus();
 
-  const Component = useMemo(
-    () => applicationsRegistry.definitions[definitionId].component,
+  const definition = useMemo(
+    () => applicationsRegistry.definitions[definitionId],
     [definitionId]
   );
 
@@ -68,7 +68,7 @@ export function useWindow() {
 
   return {
     application,
-    Component,
+    definition,
     close,
     setProps,
     setMaximized,

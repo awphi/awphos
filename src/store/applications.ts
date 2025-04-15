@@ -35,6 +35,7 @@ export interface ApplicationPropsUpdate {
 
 export interface ApplicationOpenArgs {
   definitionId: string;
+  applicationId?: string;
   args?: Record<string, any>;
   props?: Partial<ApplicationProps>;
 }
@@ -57,10 +58,16 @@ export const activeApplicationsSlice = createSlice({
   },
   reducers: {
     openApplication(state, { payload }: PayloadAction<ApplicationOpenArgs>) {
-      const { definitionId, args = {}, props: baseProps = {} } = payload;
+      const {
+        definitionId,
+        args = {},
+        props: baseProps = {},
+        applicationId = crypto.randomUUID(),
+      } = payload;
       const def = applicationsRegistry.definitions[definitionId];
+
       if (def === undefined) {
-        return;
+        throw new Error(`Unknown application definition ID: ${definitionId}`);
       }
 
       const existingInstances = Object.values(state.applications).filter(
@@ -68,7 +75,9 @@ export const activeApplicationsSlice = createSlice({
       );
 
       if (existingInstances.length >= (def.instanceLimit ?? Infinity)) {
-        return;
+        throw new Error(
+          `Instance limit reached for application definition ID: ${definitionId}`
+        );
       }
 
       const props: ApplicationProps = Object.assign(
@@ -83,7 +92,7 @@ export const activeApplicationsSlice = createSlice({
       );
 
       const app: Application = {
-        applicationId: crypto.randomUUID(),
+        applicationId,
         definitionId,
         props,
         args,

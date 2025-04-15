@@ -3,17 +3,29 @@ import useAppDispatch from "./useAppDispatch";
 import useAppSelector from "./useAppSelector";
 import applicationsRegistry from "@/applications";
 import {
+  Application,
   ApplicationProps,
   closeApplication,
   setApplicationProps,
 } from "@/store/applications";
 import { useFocus } from "./useFocus";
-import { WindowContext } from "@/components/Window/constants";
 
-export function useWindow() {
-  const { applicationId } = useContext(WindowContext);
+const nullApplication: Application = Object.freeze({
+  definitionId: "",
+  applicationId: "",
+  props: {
+    title: "",
+    minimized: false,
+    maximized: false,
+    size: { width: 0, height: 0 },
+    topLeft: { x: -1, y: -1 },
+  },
+  args: {},
+});
+
+export function useApplication(applicationId: string) {
   const application = useAppSelector(
-    (state) => state.applications.applications[applicationId]
+    (state) => state.applications.applications[applicationId] ?? nullApplication
   );
   const { definitionId } = application;
   const dispatch = useAppDispatch();
@@ -41,16 +53,6 @@ export function useWindow() {
     [applicationId]
   );
 
-  const setMaximized = useCallback(
-    (state: boolean) => setProps({ maximized: state }),
-    [setProps]
-  );
-
-  const setMinimized = useCallback(
-    (state: boolean) => setProps({ minimized: state }),
-    [setProps]
-  );
-
   const focus = useCallback(
     () => focusApp(applicationId),
     [applicationId, focusApp]
@@ -71,8 +73,6 @@ export function useWindow() {
     definition,
     close,
     setProps,
-    setMaximized,
-    setMinimized,
     focus,
     isFocused,
     zIndex,

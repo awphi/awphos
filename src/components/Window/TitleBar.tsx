@@ -1,8 +1,9 @@
 import clsx from "clsx";
 import { X, Maximize2, Minimize2, Minus } from "lucide-react";
-import { useWindow } from "@/hooks/useWindow";
+import { useApplication } from "@/hooks/useApplication";
 import { TITLE_BAR_HEIGHT, WINDOW_CONTENT_CLASSNAME } from "./constants";
 import applicationsRegistry from "@/applications";
+import useCurrentApplication from "@/hooks/useCurrentApplication";
 
 function WindowTitleBarButton(props: React.ComponentProps<"button">) {
   return (
@@ -22,11 +23,10 @@ function WindowTitleBarButton(props: React.ComponentProps<"button">) {
 export default function WindowTitleBar() {
   const {
     application: { props, definitionId },
-    setMinimized,
+    setProps,
     close,
-    setMaximized,
     isFocused,
-  } = useWindow();
+  } = useCurrentApplication();
   const def = applicationsRegistry.definitions[definitionId];
   const Icon = def.icon;
 
@@ -45,13 +45,15 @@ export default function WindowTitleBar() {
       <div className="h-full flex">
         <WindowTitleBarButton
           onClick={(e) => {
-            setMinimized(true);
+            setProps({ minimized: true });
             e.stopPropagation();
           }}
         >
           <Minus width={18} />
         </WindowTitleBarButton>
-        <WindowTitleBarButton onClick={() => setMaximized(!props.maximized)}>
+        <WindowTitleBarButton
+          onClick={() => setProps({ maximized: !props.maximized })}
+        >
           {props.maximized ? (
             <Minimize2 width={16} />
           ) : (

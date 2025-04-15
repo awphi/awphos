@@ -8,13 +8,13 @@ import React, {
 } from "react";
 import { Rnd } from "react-rnd";
 import WindowTitleBar from "./TitleBar";
-import { useWindow } from "@/hooks/useWindow";
 import clsx from "clsx";
 import {
   TITLE_BAR_HEIGHT,
   WINDOW_CONTENT_CLASSNAME,
   WindowContext,
 } from "./constants";
+import useCurrentApplication from "@/hooks/useCurrentApplication";
 
 export interface WindowProps extends React.PropsWithChildren {
   application: Application;
@@ -27,7 +27,7 @@ function WindowContent() {
     focus,
     definition: { component: Component, showTitleBar = true },
     zIndex,
-  } = useWindow();
+  } = useCurrentApplication();
   const [interacting, setInteracting] = useState(false);
 
   const rndRef = useRef<Rnd>(null);

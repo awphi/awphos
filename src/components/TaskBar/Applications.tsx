@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import TaskBarApplicationIcon, {
   TaskBarApplicationIconProps,
 } from "./ApplicationIcon";
+import applicationsRegistry from "@/applications";
 
 // TODO eventually replace with some global state
 const pinnedApplications = ["wikipedia", "dummy-app"] as const;
@@ -14,16 +15,13 @@ function getTaskBarApplications(
   const result: Record<string, TaskBarApplicationIconProps> =
     Object.create(null);
 
-  for (const definitionId of pinnedApplications) {
-    result[definitionId] = {
-      definitionId,
-      applicationIds: [],
-    };
-  }
+  function append(definitionId: string, applicationId?: string): void {
+    const showInTaskbar =
+      applicationsRegistry.definitions[definitionId].showInTaskbar ?? true;
+    if (!showInTaskbar) {
+      return;
+    }
 
-  for (const [applicationId, { definitionId }] of Object.entries(
-    applications
-  )) {
     if (!(definitionId in result)) {
       result[definitionId] = {
         definitionId,
@@ -31,7 +29,17 @@ function getTaskBarApplications(
       };
     }
 
-    result[definitionId].applicationIds.push(applicationId);
+    if (applicationId) {
+      result[definitionId].applicationIds.push(applicationId);
+    }
+  }
+
+  for (const definitionId of pinnedApplications) {
+    append(definitionId);
+  }
+
+  for (const [appId, { definitionId }] of Object.entries(applications)) {
+    append(definitionId, appId);
   }
 
   return Object.values(result);
@@ -48,7 +56,9 @@ export default function TaskBarApplications() {
 
   return (
     <div className="flex flex-auto gap-1">
-      {taskbarApplications.map(TaskBarApplicationIcon)}
+      {taskbarApplications.map((props) => (
+        <TaskBarApplicationIcon {...props} key={props.definitionId} />
+      ))}
     </div>
   );
 }

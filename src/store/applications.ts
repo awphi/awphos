@@ -71,13 +71,16 @@ export const activeApplicationsSlice = createSlice({
         return;
       }
 
-      const props: ApplicationProps = Object.assign({}, baseProps, {
-        size: { ...(def.defaultSize ?? defaultWindowSize) },
-        topLeft: { ...(def.defaultPosition ?? defaultWindowPosition) },
-        title: def.name,
-        maximized: false,
-        minimized: false,
-      });
+      const props: ApplicationProps = Object.assign(
+        {
+          size: { ...(def.defaultSize ?? defaultWindowSize) },
+          topLeft: { ...(def.defaultPosition ?? defaultWindowPosition) },
+          title: def.name,
+          maximized: false,
+          minimized: false,
+        },
+        baseProps
+      );
 
       const app: Application = {
         applicationId: crypto.randomUUID(),

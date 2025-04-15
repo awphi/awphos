@@ -1,13 +1,16 @@
 import { useDate } from "@/hooks/useDate";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import TaskBarIcon from "./Icon";
 import Image from "next/image";
 
 import logo from "../../../public/logo.png";
 import TaskBarApplications from "./Applications";
+import useAppDispatch from "@/hooks/useAppDispatch";
+import { openApplication } from "@/store/applications";
 
 export default function TaskBar() {
   const date = useDate({ updateInterval: 1000 * 60 });
+  const dispatch = useAppDispatch();
   const formattedTime = useMemo(
     () => date.toLocaleTimeString("en-GB", { timeStyle: "short" }),
     [date]
@@ -16,6 +19,15 @@ export default function TaskBar() {
     () => date.toLocaleDateString("en-GB", { dateStyle: "short" }),
     [date]
   );
+
+  useEffect(() => {
+    dispatch(
+      openApplication({
+        definitionId: "start-menu",
+        props: { minimized: true },
+      })
+    );
+  }, []);
 
   return (
     <div

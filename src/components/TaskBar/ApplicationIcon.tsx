@@ -56,7 +56,6 @@ export default function TaskBarApplicationIcon({
   return (
     <TaskBarIcon
       onClick={handleClick}
-      key={definitionId}
       className={clsx({
         "bg-neutral-200/5": isSomeInstanceFocused,
       })}

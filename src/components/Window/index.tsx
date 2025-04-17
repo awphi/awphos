@@ -27,6 +27,7 @@ function WindowContent() {
     focus,
     definition: { component: Component, showTitleBar = true },
     zIndex,
+    focusTargetId,
   } = useCurrentApplication();
   const [interacting, setInteracting] = useState(false);
 
@@ -84,6 +85,7 @@ function WindowContent() {
     >
       <div className="flex flex-col h-full overflow-hidden">
         {showTitleBar ? <WindowTitleBar /> : null}
+        <input id={focusTargetId} className="w-0 h-0 absolute" />
         <div
           className={clsx(
             "flex-auto overflow-scroll",

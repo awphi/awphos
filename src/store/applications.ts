@@ -1,7 +1,13 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createListenerMiddleware,
+  createSlice,
+  PayloadAction,
+  Tuple,
+} from "@reduxjs/toolkit";
 import applicationsRegistry from "../applications";
 import { Size, Position } from "@/types";
-import { removeFromArray } from "@/utils";
+import { getFocusTargetId, removeFromArray } from "@/utils";
+import { RootState } from ".";
 
 /**
  * Mutable properties of a running application
@@ -50,7 +56,7 @@ const defaultWindowPosition: Position = {
   y: 100,
 };
 
-export const activeApplicationsSlice = createSlice({
+const applicationsSlice = createSlice({
   name: "applications",
   initialState: {
     applications: Object.create(null) as Record<string, Application>,
@@ -141,10 +147,33 @@ export const activeApplicationsSlice = createSlice({
   },
 });
 
+const changeListener = createListenerMiddleware();
+const startChangeListener =
+  changeListener.startListening.withTypes<RootState>();
+
+startChangeListener({
+  predicate(_, currentState, originalState) {
+    const { focusQueue: current } = currentState.applications;
+    const { focusQueue: original } = originalState.applications;
+
+    return current[current.length - 1] !== original[original.length - 1];
+  },
+  effect: (_, api) => {
+    const { focusQueue } = api.getState().applications;
+    const id = getFocusTargetId(focusQueue[focusQueue.length - 1] ?? "desktop");
+    requestAnimationFrame(() => {
+      document.getElementById(id)?.focus();
+    });
+  },
+});
+
 export const {
   openApplication,
   closeApplication,
   setApplicationProps,
   focusApplication,
-} = activeApplicationsSlice.actions;
-export default activeApplicationsSlice.reducer;
+} = applicationsSlice.actions;
+
+export const applicationsMiddleware = new Tuple(changeListener.middleware);
+
+export default applicationsSlice.reducer;

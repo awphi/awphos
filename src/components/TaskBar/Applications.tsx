@@ -1,8 +1,8 @@
 import useAppSelector from "@/hooks/useAppSelector";
-import { Application } from "@/store/applications";
+import type { Application } from "@/store/applications";
 import { useMemo } from "react";
 import TaskBarApplicationIcon, {
-  TaskBarApplicationIconProps,
+  type TaskBarApplicationIconProps,
 } from "./ApplicationIcon";
 import applicationsRegistry from "@/applications";
 

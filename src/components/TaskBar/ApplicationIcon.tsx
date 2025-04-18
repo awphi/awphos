@@ -1,6 +1,6 @@
 import applicationsRegistry from "@/applications";
 import TaskBarIcon from "./Icon";
-import { MouseEvent, useCallback, useMemo } from "react";
+import { type MouseEvent, useCallback, useMemo } from "react";
 import useAppDispatch from "@/hooks/useAppDispatch";
 import { openApplication, setApplicationProps } from "@/store/applications";
 import { useFocus } from "@/hooks/useFocus";

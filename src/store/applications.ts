@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import applicationsRegistry from "../applications";
-import { Size, Position } from "@/types";
+import type { Size, Position } from "@/types";
 import { assignSafe, removeFromArray } from "@/utils";
 
 /**

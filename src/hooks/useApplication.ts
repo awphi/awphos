@@ -1,10 +1,10 @@
-import { useCallback, useContext, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import useAppDispatch from "./useAppDispatch";
 import useAppSelector from "./useAppSelector";
 import applicationsRegistry from "@/applications";
 import {
-  Application,
-  ApplicationProps,
+  type Application,
+  type ApplicationProps,
   closeApplication,
   setApplicationProps,
 } from "@/store/applications";

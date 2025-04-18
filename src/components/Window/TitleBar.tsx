@@ -1,11 +1,11 @@
 import clsx from "clsx";
 import { X, Maximize2, Minimize2, Minus } from "lucide-react";
-import { useApplication } from "@/hooks/useApplication";
 import { TITLE_BAR_HEIGHT, WINDOW_CONTENT_CLASSNAME } from "./constants";
 import applicationsRegistry from "@/applications";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
+import type { ComponentProps } from "react";
 
-function WindowTitleBarButton(props: React.ComponentProps<"button">) {
+function WindowTitleBarButton(props: ComponentProps<"button">) {
   return (
     <button
       {...props}

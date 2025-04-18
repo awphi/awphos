@@ -1,6 +1,7 @@
-import { Application } from "@/store/applications";
-import React, {
-  MouseEvent,
+import type { Application } from "@/store/applications";
+import {
+  type MouseEvent,
+  type PropsWithChildren,
   useCallback,
   useMemo,
   useRef,
@@ -16,7 +17,7 @@ import {
 } from "./constants";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 
-export interface WindowProps extends React.PropsWithChildren {
+export interface WindowProps extends PropsWithChildren {
   application: Application;
 }
 

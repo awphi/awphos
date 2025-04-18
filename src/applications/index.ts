@@ -1,15 +1,15 @@
 import DummyApp from "@/applications/DummyApp";
-import { Position, Size } from "@/types";
+import type { Position, Size } from "@/types";
 import { SiWikipedia } from "@icons-pack/react-simple-icons";
 import { AppWindowIcon } from "lucide-react";
-import React from "react";
+import { type ComponentProps, type FC } from "react";
 import Wikipedia from "./Wikipedia";
 import StartMenu from "./StartMenu";
 
 export interface ApplicationDefinition {
   name: string;
-  component: React.FC;
-  icon: React.FC<React.ComponentProps<"svg">>;
+  component: FC;
+  icon: FC<ComponentProps<"svg">>;
   /**
    * Number of active windows allowed for this application
    * @defaultValue Infinity

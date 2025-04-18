@@ -35,7 +35,6 @@ export default function TaskBarStartMenuIcon() {
 
   return (
     <TaskBarIcon onClick={toggleMinimized}>
-      {/** TODO open or toggle minimization of the start-menu app on click */}
       <div
         title="Start"
         className="h-full aspect-square relative flex items-center justify-center"

@@ -16,9 +16,9 @@ function getTaskBarApplications(
     Object.create(null);
 
   function append(definitionId: string, applicationId?: string): void {
-    const showInTaskbar =
-      applicationsRegistry.definitions[definitionId].showInTaskbar ?? true;
-    if (!showInTaskbar) {
+    if (
+      applicationsRegistry.definitions[definitionId].showInTaskbar === false
+    ) {
       return;
     }
 

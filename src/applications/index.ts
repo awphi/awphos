@@ -41,12 +41,17 @@ export interface ApplicationDefinition {
    * @default true
    */
   showInTaskbar?: boolean;
+  /**
+   * @default true
+   */
+  showInStartMenu?: boolean;
 }
 
 // TODO maybe expose a getDefinition here that applies defaults instead of doing in-situ all over the place?
-interface ApplicationsRegistry {
+export interface ApplicationsRegistry {
   definitions: Record<string, ApplicationDefinition>;
 }
+
 const applicationsRegistry: ApplicationsRegistry = {
   // application definition registry
   definitions: {
@@ -68,6 +73,7 @@ const applicationsRegistry: ApplicationsRegistry = {
       draggable: false,
       showTitleBar: false,
       showInTaskbar: false,
+      showInStartMenu: false,
       defaultPosition: { x: 0, y: 0 },
       defaultSize: { height: "100%", width: 300 },
       instanceLimit: 1,

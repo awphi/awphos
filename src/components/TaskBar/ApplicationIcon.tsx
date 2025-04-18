@@ -52,17 +52,23 @@ export default function TaskBarApplicationIcon({
 
   // TODO right click context menu to close all or open a new instance of this application
 
-  // TODO add styling for window count > 1 - paged like effect
   return (
     <TaskBarIcon
       onClick={handleClick}
-      className={clsx({
-        "bg-neutral-200/5": isSomeInstanceFocused,
-      })}
+      className={clsx(
+        {
+          "bg-neutral-200/5": isSomeInstanceFocused,
+        },
+        "relative"
+      )}
     >
+      {isSomeInstanceFocused && applicationIds.length > 1 ? (
+        <div className="absolute  w-[91%] h-full bg-neutral-200/5 rounded-sm left-0 border-r border-neutral-200/5"></div>
+      ) : null}
       <div
         title={def.name}
-        className="h-full aspect-square flex items-center justify-center relative"
+        className="h-full flex items-center justify-center relative"
+        style={{ aspectRatio: "1.1 / 1" }}
       >
         <Icon />
         <div

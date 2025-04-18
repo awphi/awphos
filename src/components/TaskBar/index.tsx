@@ -19,7 +19,7 @@ export default function TaskBar() {
 
   return (
     <div
-      className="w-full flex bg-neutral-700/50 border-t gap-1 backdrop-blur-sm border-neutral-600/50 px-3 pb-1.5 py-1 select-none"
+      className="w-full flex bg-neutral-700/50 gap-1 backdrop-blur-sm px-3 pb-1.5 py-1 select-none"
       style={{ zIndex: 1_000_000 }}
     >
       <TaskBarStartMenuIcon />

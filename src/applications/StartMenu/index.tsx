@@ -13,7 +13,7 @@ export default function StartMenu() {
 
   return (
     <div className="h-full grid">
-      <div className="bg-neutral-700/50 p-2 border-neutral-600/50 border-r border-t backdrop-blur-sm h-[500px] mt-auto flex flex-col gap-1">
+      <div className="bg-neutral-800/75 p-2 backdrop-blur-sm h-[500px] mt-auto flex flex-col gap-1">
         <StartMenuApplicationList></StartMenuApplicationList>
       </div>
     </div>

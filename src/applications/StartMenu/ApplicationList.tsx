@@ -81,7 +81,7 @@ export function StartMenuApplicationList() {
     [applicationsRegistry]
   );
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       <div className="flex gap-2 text-lg font-bold items-center">
         <BoxesIcon width={20} />
         <h1>Apps</h1>

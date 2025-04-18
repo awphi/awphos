@@ -76,11 +76,14 @@ function WindowContent() {
       enableResizing={!props.maximized}
       cancel={`.${WINDOW_CONTENT_CLASSNAME}`}
       style={{ cursor: "initial", zIndex }}
-      className={clsx({
-        "transition-all": !interacting,
-        "opacity-0": props.minimized,
-        "pointer-events-none": props.minimized,
-      })}
+      className={clsx(
+        {
+          "transition-all": !interacting,
+          "opacity-0": props.minimized,
+          "pointer-events-none": props.minimized,
+        },
+        "shadow-sm"
+      )}
       onClick={handleClick}
     >
       <div className="flex flex-col h-full overflow-hidden">

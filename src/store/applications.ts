@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import applicationsRegistry from "../applications";
 import { Size, Position } from "@/types";
-import { removeFromArray } from "@/utils";
+import { assignSafe, removeFromArray } from "@/utils";
 
 /**
  * Mutable properties of a running application
@@ -112,14 +112,7 @@ export const activeApplicationsSlice = createSlice({
       } = action;
 
       if (applicationId in state.applications) {
-        const baseProps = state.applications[applicationId].props as any;
-
-        // Object.assign but without overwriting existing props with undefined values
-        for (const [k, v] of Object.entries(props)) {
-          if (v !== undefined) {
-            baseProps[k] = v;
-          }
-        }
+        assignSafe(state.applications[applicationId].props, props);
 
         // always remove a minimized application from the focus queue
         if (props.minimized === true) {

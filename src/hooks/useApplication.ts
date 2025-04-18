@@ -9,7 +9,6 @@ import {
   setApplicationProps,
 } from "@/store/applications";
 import { useFocus } from "./useFocus";
-import { getFocusTargetId } from "@/utils";
 
 const nullApplication: Application = Object.freeze({
   definitionId: "",
@@ -69,12 +68,6 @@ export function useApplication(applicationId: string) {
     [focusQueue, applicationId]
   );
 
-  // useful for application implementations to listen for window focus and hijack it
-  const focusTargetId = useMemo(
-    () => getFocusTargetId(applicationId),
-    [applicationId]
-  );
-
   return {
     application,
     definition,
@@ -83,6 +76,5 @@ export function useApplication(applicationId: string) {
     focus,
     isFocused,
     zIndex,
-    focusTargetId,
   };
 }

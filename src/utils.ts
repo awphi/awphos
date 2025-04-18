@@ -7,7 +7,3 @@ export function removeFromArray<T>(arr: T[], item: T): boolean {
 
   return false;
 }
-
-export function getFocusTargetId(applicationId: string): string {
-  return `focus_application_target:${applicationId}`;
-}

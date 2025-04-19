@@ -1,10 +1,11 @@
 import DummyApp from "@/applications/DummyApp";
 import type { Position, Size } from "@/types";
 import { SiWikipedia } from "@icons-pack/react-simple-icons";
-import { AppWindowIcon } from "lucide-react";
+import { AppWindowIcon, GamepadIcon } from "lucide-react";
 import { type ComponentProps, type FC } from "react";
 import Wikipedia from "./Wikipedia";
 import StartMenu from "./StartMenu";
+import TwentyFortyEight from "./TwentyFortyEight";
 
 export interface ApplicationDefinition {
   name: string;
@@ -59,6 +60,15 @@ const applicationsRegistry: ApplicationsRegistry = {
       name: "Wikipedia",
       component: Wikipedia,
       icon: SiWikipedia,
+    },
+    "2048": {
+      name: "2048",
+      component: TwentyFortyEight,
+      icon: GamepadIcon,
+      defaultSize: {
+        width: 380,
+        height: 412,
+      },
     },
     "dummy-app": {
       name: "Dummy App",

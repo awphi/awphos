@@ -12,8 +12,7 @@ const pinnedApplications = ["wikipedia", "dummy-app"] as const;
 function getTaskBarApplications(
   applications: Record<string, Application>
 ): TaskBarApplicationIconProps[] {
-  const result: Record<string, TaskBarApplicationIconProps> =
-    Object.create(null);
+  const result = new Map<string, TaskBarApplicationIconProps>();
 
   function append(definitionId: string, applicationId?: string): void {
     if (
@@ -23,14 +22,14 @@ function getTaskBarApplications(
     }
 
     if (!(definitionId in result)) {
-      result[definitionId] = {
+      result.set(definitionId, {
         definitionId,
         applicationIds: [],
-      };
+      });
     }
 
     if (applicationId) {
-      result[definitionId].applicationIds.push(applicationId);
+      result.get(definitionId)!.applicationIds.push(applicationId);
     }
   }
 
@@ -42,7 +41,7 @@ function getTaskBarApplications(
     append(definitionId, appId);
   }
 
-  return Object.values(result);
+  return [...result.values()];
 }
 
 export default function TaskBarApplications() {

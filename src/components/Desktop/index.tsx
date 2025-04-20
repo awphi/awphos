@@ -1,6 +1,7 @@
 import useAppSelector from "@/hooks/useAppSelector";
 import clsx from "clsx";
 import Window from "../Window";
+import { AnimatePresence } from "motion/react";
 
 export default function Desktop() {
   const applications = useAppSelector(
@@ -9,9 +10,13 @@ export default function Desktop() {
 
   return (
     <div className={clsx("w-full flex-auto relative")}>
-      {Object.keys(applications).map((id) => (
-        <Window key={id} application={applications[id]}></Window>
-      ))}
+      <AnimatePresence initial={false}>
+        {Object.keys(applications).map((id) =>
+          applications[id].state === "open" ? (
+            <Window key={id} application={applications[id]}></Window>
+          ) : null
+        )}
+      </AnimatePresence>
     </div>
   );
 }

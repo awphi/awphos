@@ -21,6 +21,10 @@ function getTaskBarApplications(
       return;
     }
 
+    if (applicationId && applications[applicationId]?.state !== "open") {
+      return;
+    }
+
     if (!(definitionId in result)) {
       result.set(definitionId, {
         definitionId,

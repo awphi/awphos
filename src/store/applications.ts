@@ -21,6 +21,7 @@ export interface Application {
   definitionId: string;
   applicationId: string;
   props: ApplicationProps;
+  state: "open" | "closing";
   // TODO could be a more specific type?
   args: Record<string, any>;
 }
@@ -96,11 +97,17 @@ export const activeApplicationsSlice = createSlice({
         definitionId,
         props,
         args,
+        state: "open",
       };
       state.applications[app.applicationId] = app;
       state.focusQueue.push(app.applicationId);
     },
-    closeApplication(state, { payload }: PayloadAction<string>) {
+    startCloseApplication(state, { payload }: PayloadAction<string>) {
+      if (payload in state.applications) {
+        state.applications[payload].state = "closing";
+      }
+    },
+    finalizeCloseApplication(state, { payload }: PayloadAction<string>) {
       if (payload in state.applications) {
         delete state.applications[payload];
         removeFromArray(state.focusQueue, payload);
@@ -136,7 +143,8 @@ export const activeApplicationsSlice = createSlice({
 
 export const {
   openApplication,
-  closeApplication,
+  startCloseApplication,
+  finalizeCloseApplication,
   setApplicationProps,
   focusApplication,
 } = activeApplicationsSlice.actions;

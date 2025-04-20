@@ -12,6 +12,7 @@ import WindowTitleBar from "./TitleBar";
 import clsx from "clsx";
 import { WINDOW_CONTENT_CLASSNAME, WindowContext } from "./constants";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
+import { motion } from "motion/react";
 
 export interface WindowProps extends PropsWithChildren {
   application: Application;
@@ -78,17 +79,24 @@ function WindowContent() {
       cancel={`.${WINDOW_CONTENT_CLASSNAME}`}
       style={{ cursor: "initial", zIndex }}
       className={clsx({
+        // use native CSS transitions for toggling maximized state
         "transition-all": !interacting,
-        "opacity-0 pointer-events-none": props.minimized,
+        "pointer-events-none": props.minimized,
       })}
       onClick={handleClick}
     >
-      <div className="flex flex-col h-full overflow-hidden">
+      <motion.div
+        exit={{ opacity: 0, scale: 0 }}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: props.minimized ? 0 : 1, scale: 1 }}
+        transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
+        className="drop-shadow-sm flex flex-col h-full overflow-hidden"
+      >
         {showTitleBar ? <WindowTitleBar /> : null}
-        <div className={clsx("flex-auto shadow-sm", WINDOW_CONTENT_CLASSNAME)}>
+        <div className={clsx("flex-auto", WINDOW_CONTENT_CLASSNAME)}>
           <Component />
         </div>
-      </div>
+      </motion.div>
     </Rnd>
   );
 }

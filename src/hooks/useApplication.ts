@@ -10,22 +10,9 @@ import {
 } from "@/store/applications";
 import { useFocus } from "./useFocus";
 
-const nullApplication: Application = Object.freeze({
-  definitionId: "",
-  applicationId: "",
-  props: {
-    title: "",
-    minimized: false,
-    maximized: false,
-    size: { width: 0, height: 0 },
-    topLeft: { x: -1, y: -1 },
-  },
-  args: {},
-});
-
 export function useApplication(applicationId: string) {
   const application = useAppSelector(
-    (state) => state.applications.applications[applicationId] ?? nullApplication
+    (state) => state.applications.applications[applicationId]
   );
   const { definitionId } = application;
   const dispatch = useAppDispatch();

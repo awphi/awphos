@@ -10,11 +10,7 @@ import {
 import { Rnd } from "react-rnd";
 import WindowTitleBar from "./TitleBar";
 import clsx from "clsx";
-import {
-  TITLE_BAR_HEIGHT,
-  WINDOW_CONTENT_CLASSNAME,
-  WindowContext,
-} from "./constants";
+import { WINDOW_CONTENT_CLASSNAME, WindowContext } from "./constants";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 
 export interface WindowProps extends PropsWithChildren {
@@ -26,7 +22,11 @@ function WindowContent() {
     application: { props },
     setProps,
     focus,
-    definition: { component: Component, showTitleBar = true },
+    definition: {
+      component: Component,
+      showTitleBar = true,
+      minSize = { width: 250, height: 100 },
+    },
     zIndex,
   } = useCurrentApplication();
   const [interacting, setInteracting] = useState(false);
@@ -54,13 +54,14 @@ function WindowContent() {
       size={size}
       ref={rndRef}
       position={topLeft}
-      minHeight={showTitleBar ? TITLE_BAR_HEIGHT : 0}
+      minHeight={minSize.height}
+      minWidth={minSize.width}
+      onDragStart={() => {
+        setInteracting(true);
+      }}
       onDragStop={(_, { x, y }) => {
         setProps({ topLeft: { x, y } });
         setInteracting(false);
-      }}
-      onDragStart={() => {
-        setInteracting(true);
       }}
       onResizeStart={() => {
         setInteracting(true);
@@ -76,24 +77,15 @@ function WindowContent() {
       enableResizing={!props.maximized}
       cancel={`.${WINDOW_CONTENT_CLASSNAME}`}
       style={{ cursor: "initial", zIndex }}
-      className={clsx(
-        {
-          "transition-all": !interacting,
-          "opacity-0": props.minimized,
-          "pointer-events-none": props.minimized,
-        },
-        "shadow-sm"
-      )}
+      className={clsx({
+        "transition-all": !interacting,
+        "opacity-0 pointer-events-none": props.minimized,
+      })}
       onClick={handleClick}
     >
       <div className="flex flex-col h-full overflow-hidden">
         {showTitleBar ? <WindowTitleBar /> : null}
-        <div
-          className={clsx(
-            "flex-auto overflow-scroll",
-            WINDOW_CONTENT_CLASSNAME
-          )}
-        >
+        <div className={clsx("flex-auto shadow-sm", WINDOW_CONTENT_CLASSNAME)}>
           <Component />
         </div>
       </div>

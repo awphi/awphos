@@ -46,6 +46,10 @@ export interface ApplicationDefinition {
    * @default true
    */
   showInStartMenu?: boolean;
+  /**
+   * @defaultValue (250, 100)
+   */
+  minSize?: Size;
 }
 
 // TODO maybe expose a getDefinition here that applies defaults instead of doing in-situ all over the place?
@@ -67,7 +71,11 @@ const applicationsRegistry: ApplicationsRegistry = {
       icon: GamepadIcon,
       defaultSize: {
         width: 380,
-        height: 412,
+        height: 380,
+      },
+      minSize: {
+        width: 380,
+        height: 380,
       },
     },
     "dummy-app": {

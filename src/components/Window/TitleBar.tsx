@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { X, Maximize2, Minimize2, Minus } from "lucide-react";
-import { TITLE_BAR_HEIGHT, WINDOW_CONTENT_CLASSNAME } from "./constants";
+import { WINDOW_CONTENT_CLASSNAME } from "./constants";
 import applicationsRegistry from "@/applications";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 import type { ComponentProps } from "react";
@@ -33,10 +33,9 @@ export default function WindowTitleBar() {
   return (
     <div
       className={clsx(
-        "flex items-center select-none pl-2 justify-between",
+        "flex items-center select-none pl-2 justify-between min-h-[32px]",
         isFocused ? "bg-neutral-800" : "bg-neutral-700"
       )}
-      style={{ minHeight: TITLE_BAR_HEIGHT }}
     >
       <div className="flex gap-2 items-center">
         <Icon width={16} height={16} />

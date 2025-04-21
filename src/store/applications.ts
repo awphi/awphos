@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import applicationsRegistry from "../applications";
 import type { Size, Position } from "@/types";
 import { assignSafe, removeFromArray } from "@/utils";
+import { shallowEqual } from "react-redux";
 
 /**
  * Mutable properties of a running application
@@ -62,7 +63,7 @@ export const activeApplicationsSlice = createSlice({
       const {
         definitionId,
         args = {},
-        props: baseProps = {},
+        props: userProps = {},
         applicationId = crypto.randomUUID(),
       } = payload;
       const def = applicationsRegistry.definitions[definitionId];
@@ -71,26 +72,43 @@ export const activeApplicationsSlice = createSlice({
         throw new Error(`Unknown application definition ID: ${definitionId}`);
       }
 
-      const existingInstances = Object.values(state.applications).filter(
+      const {
+        instanceLimit = Infinity,
+        defaultPosition = defaultWindowPosition,
+        defaultSize = defaultWindowSize,
+      } = def;
+
+      const currentApplications = Object.values(state.applications);
+      const existingInstances = currentApplications.filter(
         (v) => v.definitionId === definitionId
       );
 
-      if (existingInstances.length >= (def.instanceLimit ?? Infinity)) {
+      if (existingInstances.length >= instanceLimit) {
         throw new Error(
           `Instance limit reached for application definition ID: ${definitionId}`
         );
       }
 
-      const props: ApplicationProps = Object.assign(
+      const props = Object.assign<ApplicationProps, Partial<ApplicationProps>>(
         {
-          size: { ...(def.defaultSize ?? defaultWindowSize) },
-          topLeft: { ...(def.defaultPosition ?? defaultWindowPosition) },
+          size: { ...defaultSize },
+          topLeft: { ...defaultPosition },
           title: def.name,
           maximized: false,
           minimized: false,
         },
-        baseProps
+        userProps
       );
+
+      // prevent window overlap
+      while (
+        currentApplications.some((app) =>
+          shallowEqual(props.topLeft, app.props.topLeft)
+        )
+      ) {
+        props.topLeft.x += 20;
+        props.topLeft.y += 20;
+      }
 
       const app: Application = {
         applicationId,

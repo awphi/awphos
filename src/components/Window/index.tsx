@@ -42,6 +42,10 @@ function WindowContent() {
     return props.maximized ? { x: 0, y: 0 } : props.topLeft;
   }, [props.maximized, props.topLeft]);
 
+  const scaleAndOpacity = useMemo(() => {
+    return props.minimized ? 0 : 1;
+  }, [props.minimized]);
+
   const handleClick = useCallback(
     (e: MouseEvent) => {
       focus();
@@ -88,7 +92,7 @@ function WindowContent() {
       <motion.div
         exit={{ opacity: 0, scale: 0 }}
         initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: props.minimized ? 0 : 1, scale: 1 }}
+        animate={{ opacity: scaleAndOpacity, scale: scaleAndOpacity }}
         transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
         className="drop-shadow-sm flex flex-col h-full overflow-hidden"
       >

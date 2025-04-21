@@ -57,7 +57,12 @@ function TwentyFortyEightTile({
 
 function TwentyFortyEightBoard({ board }: { board: TwentyFortyEightBoard }) {
   return (
-    <motion.div className="grid grid-cols-4 gap-2 w-fit bg-neutral-500 p-2 rounded-sm">
+    <motion.div
+      className="grid gap-2 w-fit bg-neutral-500 p-2 rounded-sm min-w-max"
+      style={{
+        gridTemplateColumns: `repeat(${board.size}, minmax(0, 1fr))`,
+      }}
+    >
       {Array.from({ length: board.size * board.size }, (_, i) => (
         <motion.div className="w-16 h-16 bg-neutral-400" key={i}>
           {board.grid[i].map((tile) => (
@@ -79,8 +84,14 @@ export default function TwentyFortyEight() {
         return;
       }
 
+      const maybeInt = Number.parseInt(e.key);
+
       if (e.key.startsWith("Arrow")) {
         setBoard(shiftBoard(board, e.key as any));
+      } else if (e.key === "r") {
+        setBoard(makeBoard(board.size));
+      } else if (3 <= maybeInt && maybeInt <= 8) {
+        setBoard(makeBoard(maybeInt));
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -90,6 +101,7 @@ export default function TwentyFortyEight() {
     };
   }, [isFocused, board, setBoard]);
 
+  // TODO some sort of help menu for the controls
   return (
     <div className="bg-neutral-100 h-full min-h-fit flex items-center justify-center">
       <TwentyFortyEightBoard board={board}></TwentyFortyEightBoard>

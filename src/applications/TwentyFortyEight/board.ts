@@ -56,7 +56,9 @@ function shiftRowLeft(row: TwentyFortyEightTile[][]): TwentyFortyEightTile[][] {
     }
 
     const currentCell = { ...flatFilteredRow[i], isNew: false };
-    const nextCell = { ...flatFilteredRow[i + 1], isNew: false };
+    const nextCell = flatFilteredRow[i + 1]
+      ? { ...flatFilteredRow[i + 1], isNew: false }
+      : undefined; // might be oob access
 
     if (nextCell && currentCell.value === nextCell.value) {
       result.push([currentCell, nextCell, makeTile(currentCell.value * 2)]);

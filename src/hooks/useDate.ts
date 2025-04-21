@@ -8,19 +8,18 @@ export interface UseDateOptions {
   updateInterval?: number;
 }
 
-export function useDate(opts?: UseDateOptions) {
+export function useDate({ updateInterval = 1000 }: UseDateOptions = {}) {
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
-    const ms = opts?.updateInterval ?? 1000;
     const id = setInterval(() => {
       setNow(new Date());
-    }, ms);
+    }, updateInterval);
 
     return () => {
       clearInterval(id);
     };
-  }, [opts?.updateInterval]);
+  }, [updateInterval]);
 
   return now;
 }

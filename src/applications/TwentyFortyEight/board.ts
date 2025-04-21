@@ -1,67 +1,103 @@
-export function makeBoard(size: number = 4): number[] {
-  const board = new Array<number>(size * size).fill(0);
+export interface TwentyFortyEightTile {
+  value: number;
+  id: string;
+  isNew: boolean;
+}
+
+export interface TwentyFortyEightBoard {
+  size: number;
+  // flat matrix of cells. note that cells can contain multiple tiles
+  grid: TwentyFortyEightTile[][];
+}
+
+export function makeBoard(size: number = 4): TwentyFortyEightBoard {
+  const board: TwentyFortyEightBoard = {
+    size,
+    grid: Array.from({ length: size * size }, (_) => []),
+  };
   addRandomTile(board, 2);
   return board;
 }
 
-function getRandomEmptyCell(board: number[]): number {
-  const emptyCells = board
-    .map((val, idx) => (val === 0 ? idx : -1))
+function makeTile(value: number): TwentyFortyEightTile {
+  return {
+    value,
+    id: crypto.randomUUID(),
+    isNew: true,
+  };
+}
+
+// in-place
+function addRandomTile({ grid }: TwentyFortyEightBoard, value: number): void {
+  const emptyCells = grid
+    .map((val, idx) => (val.length === 0 ? idx : -1))
     .filter((idx) => idx !== -1);
+
+  if (emptyCells.length === 0) {
+    return;
+  }
+
   const randomIdx = Math.floor(Math.random() * emptyCells.length);
-  return emptyCells[randomIdx];
+  grid[emptyCells[randomIdx]].push(makeTile(value));
 }
 
-export function addRandomTile(board: number[], value: number): void {
-  board[getRandomEmptyCell(board)] = value;
-}
+function shiftRowLeft(row: TwentyFortyEightTile[][]): TwentyFortyEightTile[][] {
+  const flatFilteredRow = row
+    .filter((cell) => cell.length > 0)
+    .map((cell) => cell.reduce((p, c) => (c.value > p.value ? c : p)));
 
-function shiftRowLeft(row: number[]): number[] {
-  const filtered = row.filter((val) => val !== 0);
-  const merged: number[] = [];
-  let skip = false;
+  const result: TwentyFortyEightTile[][] = [];
+  let skipNext = false;
 
-  for (let i = 0; i < filtered.length; i++) {
-    if (skip) {
-      skip = false;
+  for (let i = 0; i < flatFilteredRow.length; i++) {
+    if (skipNext) {
+      skipNext = false;
       continue;
     }
-    if (i < filtered.length - 1 && filtered[i] === filtered[i + 1]) {
-      merged.push(filtered[i] * 2);
-      skip = true;
+
+    const currentCell = { ...flatFilteredRow[i], isNew: false };
+    const nextCell = { ...flatFilteredRow[i + 1], isNew: false };
+
+    if (nextCell && currentCell.value === nextCell.value) {
+      result.push([currentCell, nextCell, makeTile(currentCell.value * 2)]);
+      skipNext = true;
     } else {
-      merged.push(filtered[i]);
+      result.push([currentCell]);
     }
   }
 
-  while (merged.length < row.length) {
-    merged.push(0);
+  // pad RHS with empty cells
+  while (result.length < row.length) {
+    result.push([]);
   }
 
-  return merged;
+  return result;
 }
+
 export function shiftBoard(
-  board: number[],
+  oldBoard: TwentyFortyEightBoard,
   direction: "ArrowLeft" | "ArrowRight" | "ArrowUp" | "ArrowDown",
-  size: number = 4
-): number[] {
-  const newBoard = new Array<number>(size * size).fill(0);
+  newValue: number | null = Math.random() > 0.9 ? 4 : 2
+): TwentyFortyEightBoard {
+  const { size, grid: oldGrid } = oldBoard;
+  const newBoard = makeBoard(size);
+  const { grid: newGrid } = newBoard;
 
   const getRow = (rowIdx: number) =>
-    board.slice(rowIdx * size, (rowIdx + 1) * size);
+    oldGrid.slice(rowIdx * size, (rowIdx + 1) * size);
 
-  const setRow = (rowIdx: number, row: number[]) => {
+  const setRow = (rowIdx: number, row: TwentyFortyEightTile[][]) => {
     for (let i = 0; i < size; i++) {
-      newBoard[rowIdx * size + i] = row[i];
+      newGrid[rowIdx * size + i] = row[i];
     }
   };
 
   const getColumn = (colIdx: number) =>
-    Array.from({ length: size }, (_, i) => board[i * size + colIdx]);
+    Array.from({ length: size }, (_, i) => oldGrid[i * size + colIdx]);
 
-  const setColumn = (colIdx: number, col: number[]) => {
+  const setColumn = (colIdx: number, col: TwentyFortyEightTile[][]) => {
     for (let i = 0; i < size; i++) {
-      newBoard[i * size + colIdx] = col[i];
+      newGrid[i * size + colIdx] = col[i];
     }
   };
 
@@ -81,6 +117,10 @@ export function shiftBoard(
     for (let i = 0; i < size; i++) {
       setColumn(i, shiftRowLeft(getColumn(i).reverse()).reverse());
     }
+  }
+
+  if (newValue !== null) {
+    addRandomTile(newBoard, newValue);
   }
 
   return newBoard;

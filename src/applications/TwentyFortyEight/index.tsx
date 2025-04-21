@@ -1,10 +1,16 @@
 import useCurrentApplication from "@/hooks/useCurrentApplication";
-import clsx from "clsx";
 import { useEffect, useState } from "react";
-import { addRandomTile, makeBoard, shiftBoard } from "./board";
+import {
+  makeBoard,
+  shiftBoard,
+  type TwentyFortyEightBoard,
+  type TwentyFortyEightTile,
+} from "./board";
+import { motion } from "motion/react";
+import clsx from "clsx";
 
 // indexed by (Math.log2(value) - 1) % colors.length
-const colors = [
+const TILE_COLORS = [
   "bg-neutral-100",
   "bg-neutral-200",
   "bg-amber-50",
@@ -18,41 +24,54 @@ const colors = [
   "bg-red-700",
 ];
 
-const fontSizes = ["text-4xl", "text-3xl", "text-2xl", "text-xl"];
+const TILE_FONT_SIZES = ["text-4xl", "text-3xl", "text-2xl", "text-xl"];
 
-function TwentyFortyEightCell({ value }: { value: number }) {
+function TwentyFortyEightTile({
+  tile: { value, id, isNew },
+}: {
+  tile: TwentyFortyEightTile;
+}) {
   const bgClass =
     value === 0
       ? "bg-neutral-400"
-      : colors[(Math.log2(value) - 1) % colors.length];
-  const fontSizeClass = fontSizes[value.toString().length - 1];
+      : TILE_COLORS[(Math.log2(value) - 1) % TILE_COLORS.length];
+  const fontSizeClass = TILE_FONT_SIZES[value.toString().length - 1];
 
   return (
-    <div
+    <motion.div
+      layout
+      layoutId={id}
+      initial={isNew ? { opacity: 0, scale: 0 } : false}
+      animate={{ opacity: 1, scale: 1 }}
+      style={{ zIndex: value }}
       className={clsx(
-        "w-16 h-16 flex justify-center items-center text-neutral-600 font-bold transition-all",
+        "w-16 h-16 flex justify-center absolute items-center text-neutral-600 font-bold",
         bgClass,
         fontSizeClass
       )}
     >
-      {value > 0 ? <span>{value}</span> : null}
-    </div>
+      <span>{value}</span>
+    </motion.div>
   );
 }
 
-function TwentyFortyEightBoard({ board }: { board: number[] }) {
+function TwentyFortyEightBoard({ board }: { board: TwentyFortyEightBoard }) {
   return (
-    <div className="grid grid-cols-4 gap-2 w-fit bg-neutral-500 p-2 rounded-sm">
-      {board.map((cell, idx) => (
-        <TwentyFortyEightCell key={idx} value={cell} />
+    <motion.div className="grid grid-cols-4 gap-2 w-fit bg-neutral-500 p-2 rounded-sm">
+      {Array.from({ length: board.size * board.size }, (_, i) => (
+        <motion.div className="w-16 h-16 bg-neutral-400" key={i}>
+          {board.grid[i].map((tile) => (
+            <TwentyFortyEightTile key={tile.id} tile={tile} />
+          ))}
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }
 
 export default function TwentyFortyEight() {
   const { isFocused } = useCurrentApplication();
-  const [board, setBoard] = useState(makeBoard());
+  const [board, setBoard] = useState(makeBoard(4));
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -61,9 +80,7 @@ export default function TwentyFortyEight() {
       }
 
       if (e.key.startsWith("Arrow")) {
-        const newBoard = shiftBoard(board, e.key as any);
-        addRandomTile(newBoard, Math.random() < 0.9 ? 2 : 4);
-        setBoard(newBoard);
+        setBoard(shiftBoard(board, e.key as any));
       }
     };
     window.addEventListener("keydown", handleKeyDown);

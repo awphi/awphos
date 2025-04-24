@@ -106,11 +106,14 @@ function WindowContent() {
 }
 
 export default function Window(props: WindowProps) {
-  const { applicationId } = props.application;
-  const contextValue = useMemo(() => ({ applicationId }), [applicationId]);
+  const { applicationId, state } = props.application;
+
+  if (state !== "open") {
+    return null;
+  }
 
   return (
-    <WindowContext.Provider value={contextValue}>
+    <WindowContext.Provider value={applicationId}>
       <WindowContent></WindowContent>
     </WindowContext.Provider>
   );

@@ -15,7 +15,7 @@ function groupApplicationDefinitions(): ApplicationDefinitionGroup[] {
   for (const [definitionId, def] of Object.entries(
     applicationsRegistry.definitions
   )) {
-    if (def.showInStartMenu === false) {
+    if (!def.showInStartMenu) {
       continue;
     }
     const char = def.name[0].toUpperCase();

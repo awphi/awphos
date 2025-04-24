@@ -11,15 +11,15 @@ export default function Desktop() {
     (state) => state.applications.applications
   );
   const dispatch = useAppDispatch();
-  const applicationIds = useMemo(
-    () => Object.keys(applications),
+  const applicationsList = useMemo(
+    () => Object.values(applications),
     [applications]
   );
 
   const handleWindowAnimationExit = useCallback(() => {
-    for (const id of applicationIds) {
-      if (applications[id].state === "closing") {
-        dispatch(finalizeCloseApplication(id));
+    for (const { applicationId, state } of applicationsList) {
+      if (state === "closing") {
+        dispatch(finalizeCloseApplication(applicationId));
       }
     }
   }, []);
@@ -30,11 +30,9 @@ export default function Desktop() {
         onExitComplete={handleWindowAnimationExit}
         initial={false}
       >
-        {applicationIds.map((id) =>
-          applications[id].state === "open" ? (
-            <Window key={id} application={applications[id]}></Window>
-          ) : null
-        )}
+        {applicationsList.map((app) => (
+          <Window key={app.applicationId} application={app}></Window>
+        ))}
       </AnimatePresence>
     </div>
   );

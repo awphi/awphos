@@ -72,18 +72,12 @@ export const activeApplicationsSlice = createSlice({
         throw new Error(`Unknown application definition ID: ${definitionId}`);
       }
 
-      const {
-        instanceLimit = Infinity,
-        defaultPosition = defaultWindowPosition,
-        defaultSize = defaultWindowSize,
-      } = def;
-
       const currentApplications = Object.values(state.applications);
       const existingInstances = currentApplications.filter(
         (v) => v.definitionId === definitionId
       );
 
-      if (existingInstances.length >= instanceLimit) {
+      if (existingInstances.length >= def.instanceLimit) {
         throw new Error(
           `Instance limit reached for application definition ID: ${definitionId}`
         );
@@ -91,8 +85,8 @@ export const activeApplicationsSlice = createSlice({
 
       const props = Object.assign<ApplicationProps, Partial<ApplicationProps>>(
         {
-          size: { ...defaultSize },
-          topLeft: { ...defaultPosition },
+          size: { ...def.defaultSize },
+          topLeft: { ...def.defaultPosition },
           title: def.name,
           maximized: false,
           minimized: false,

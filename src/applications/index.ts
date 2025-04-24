@@ -6,6 +6,7 @@ import { type ComponentProps, type FC } from "react";
 import Wikipedia from "./Wikipedia";
 import StartMenu from "./StartMenu";
 import TwentyFortyEight from "./TwentyFortyEight";
+import { applyDefaults, deepFreeze } from "@/utils";
 
 export interface ApplicationDefinition {
   name: string;
@@ -52,51 +53,76 @@ export interface ApplicationDefinition {
   minSize?: Size;
 }
 
-// TODO maybe expose a getDefinition here that applies defaults instead of doing in-situ all over the place?
-export interface ApplicationsRegistry {
-  definitions: Record<string, ApplicationDefinition>;
-}
-
-const applicationsRegistry: ApplicationsRegistry = {
-  // application definition registry
-  definitions: {
-    wikipedia: {
-      name: "Wikipedia",
-      component: Wikipedia,
-      icon: SiWikipedia,
-    },
-    "2048": {
-      name: "2048",
-      component: TwentyFortyEight,
-      icon: GamepadIcon,
-      defaultSize: {
-        width: 380,
-        height: 380,
-      },
-      minSize: {
-        width: 380,
-        height: 380,
-      },
-    },
-    "dummy-app": {
-      name: "Dummy App",
-      component: DummyApp,
-      icon: AppWindowIcon,
-    },
-    "start-menu": {
-      name: "Start Menu",
-      component: StartMenu,
-      icon: AppWindowIcon,
-      resizable: false,
-      draggable: false,
-      showTitleBar: false,
-      showInTaskbar: false,
-      showInStartMenu: false,
-      defaultPosition: { x: 0, y: 0 },
-      defaultSize: { height: "100%", width: 300 },
-      instanceLimit: 1,
-    },
+const DEFAULT_DEFINITION: Required<ApplicationDefinition> = {
+  name: "Unknown",
+  component: () => null,
+  icon: () => null,
+  instanceLimit: Infinity,
+  defaultSize: {
+    width: 500,
+    height: 300,
+  },
+  defaultPosition: {
+    x: 100,
+    y: 100,
+  },
+  draggable: true,
+  resizable: true,
+  showTitleBar: true,
+  showInTaskbar: true,
+  showInStartMenu: true,
+  minSize: {
+    width: 250,
+    height: 100,
   },
 };
+
+export interface ApplicationsRegistry {
+  definitions: Record<string, Required<ApplicationDefinition>>;
+}
+
+const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
+  definitions: applyDefaults<ApplicationDefinition>(
+    {
+      wikipedia: {
+        name: "Wikipedia",
+        component: Wikipedia,
+        icon: SiWikipedia,
+      },
+      "2048": {
+        name: "2048",
+        component: TwentyFortyEight,
+        icon: GamepadIcon,
+        defaultSize: {
+          width: 380,
+          height: 380,
+        },
+        minSize: {
+          width: 380,
+          height: 380,
+        },
+      },
+      "dummy-app": {
+        name: "Dummy App",
+        component: DummyApp,
+        icon: AppWindowIcon,
+      },
+      "start-menu": {
+        name: "Start Menu",
+        component: StartMenu,
+        icon: AppWindowIcon,
+        resizable: false,
+        draggable: false,
+        showTitleBar: false,
+        showInTaskbar: false,
+        showInStartMenu: false,
+        defaultPosition: { x: 0, y: 0 },
+        defaultSize: { height: "100%", width: 300 },
+        instanceLimit: 1,
+      },
+    },
+    DEFAULT_DEFINITION
+  ),
+});
 
 export default applicationsRegistry;

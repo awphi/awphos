@@ -15,9 +15,8 @@ function getTaskBarApplications(
   const result = new Map<string, TaskBarApplicationIconProps>();
 
   function append(definitionId: string, applicationId?: string): void {
-    if (
-      applicationsRegistry.definitions[definitionId].showInTaskbar === false
-    ) {
+    const def = applicationsRegistry.definitions[definitionId];
+    if (!def.showInTaskbar) {
       return;
     }
 

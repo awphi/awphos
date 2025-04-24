@@ -31,3 +31,29 @@ export function assignSafe<T extends {}, S extends {}>(
   }
   return target as T & PickDefined<S>;
 }
+
+export function applyDefaults<T extends {}>(
+  obj: Record<string, T>,
+  defaultValue: Required<T>
+): Record<string, Required<T>> {
+  const result: Record<string, Required<T>> = Object.create(null);
+  for (const key in obj) {
+    const value = obj[key];
+    result[key] = assignSafe({ ...defaultValue }, value);
+  }
+  return result;
+}
+
+export function deepFreeze<T extends {}>(
+  object: T,
+  mode: "freeze" | "seal" = "freeze"
+): T {
+  const fn = mode === "freeze" ? Object.freeze : Object.seal;
+  for (const key in object) {
+    const value = object[key];
+    if (value && typeof value === "object") {
+      deepFreeze(value, mode);
+    }
+  }
+  return fn(object);
+}

@@ -42,6 +42,7 @@ export function StartMenuApplicationList() {
     () =>
       Object.entries(applicationsRegistry.definitions)
         .sort((a, b) => a[1].name.localeCompare(b[1].name))
+        .filter(([id]) => id !== "start-menu")
         .filter(([_, definition]) =>
           definition.name.toLowerCase().includes(debouncedSearch.toLowerCase())
         ),

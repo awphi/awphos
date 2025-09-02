@@ -12,10 +12,8 @@ export default function StartMenu() {
   }, [isFocused]);
 
   return (
-    <div className="h-full grid">
-      <div className="bg-neutral-800/75 p-2 backdrop-blur-sm h-[500px] mt-auto flex flex-col gap-1">
-        <StartMenuApplicationList></StartMenuApplicationList>
-      </div>
+    <div className="bg-neutral-900/70 p-4 backdrop-blur-lg h-full mt-auto flex flex-col gap-1">
+      <StartMenuApplicationList></StartMenuApplicationList>
     </div>
   );
 }

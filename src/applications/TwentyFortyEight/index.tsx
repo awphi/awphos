@@ -58,7 +58,7 @@ function TwentyFortyEightTile({
 function TwentyFortyEightBoard({ board }: { board: TwentyFortyEightBoard }) {
   return (
     <motion.div
-      className="grid gap-2 w-fit bg-neutral-500 p-2 rounded-sm min-w-max"
+      className="grid gap-2 w-fit bg-neutral-500 p-2 rounded-sm min-w-max select-none"
       style={{
         gridTemplateColumns: `repeat(${board.size}, minmax(0, 1fr))`,
       }}

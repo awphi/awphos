@@ -1,95 +1,74 @@
-import { BoxesIcon } from "lucide-react";
 import applicationsRegistry, { type ApplicationsRegistry } from "..";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { openApplication } from "@/store/applications";
 import useAppDispatch from "@/hooks/useAppDispatch";
-
-interface ApplicationDefinitionGroup {
-  definitionIds: string[];
-  title: string;
-}
-
-function groupApplicationDefinitions(): ApplicationDefinitionGroup[] {
-  const result: ApplicationDefinitionGroup[] = [];
-
-  for (const [definitionId, def] of Object.entries(
-    applicationsRegistry.definitions
-  )) {
-    if (!def.showInStartMenu) {
-      continue;
-    }
-    const char = def.name[0].toUpperCase();
-    const idx = char.charCodeAt(0);
-    if (result[idx] === undefined) {
-      result[idx] = { title: char, definitionIds: [] };
-    }
-
-    result[idx].definitionIds.push(definitionId);
-  }
-
-  return result
-    .filter((group) => group !== undefined)
-    .sort((a, b) => a.title.localeCompare(b.title));
-}
+import useCurrentApplication from "@/hooks/useCurrentApplication";
+import { useDebouncedState } from "@/hooks/useDebouncedState";
+import { motion } from "motion/react";
 
 function StartMenuApplicationListButton({
   definitionId,
 }: {
   definitionId: string;
 }) {
-  const { name } = useMemo(
+  const { name, icon: Icon } = useMemo(
     () => applicationsRegistry.definitions[definitionId],
     [definitionId]
   );
   const dispatch = useAppDispatch();
 
   return (
-    <button
+    <motion.button
       key={name}
-      className="text-left ml-1 hover:bg-neutral-200/10 px-2 py-0.5 rounded-sm w-full"
+      whileTap={{ scale: 0.95 }}
+      className="text-left hover:bg-neutral-200/10 px-2 py-0.5 rounded-sm w-full flex gap-2 items-center"
       onClick={(e) => {
         dispatch(openApplication({ definitionId }));
         e.stopPropagation();
       }}
     >
+      <Icon className="size-4" />
       <span>{name}</span>
-    </button>
-  );
-}
-
-function StartMenuApplicationListGroup({
-  group: { title, definitionIds },
-}: {
-  group: ApplicationDefinitionGroup;
-}) {
-  return (
-    <div>
-      <h2 className="text-lg font-bold">{title}</h2>
-      {definitionIds.map((definitionId) => (
-        <StartMenuApplicationListButton
-          key={definitionId}
-          definitionId={definitionId}
-        />
-      ))}
-    </div>
+    </motion.button>
   );
 }
 
 export function StartMenuApplicationList() {
-  const entries = useMemo(
-    () => groupApplicationDefinitions(),
-    [applicationsRegistry]
-  );
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex gap-2 text-lg font-bold items-center">
-        <BoxesIcon width={20} />
-        <h1>Apps</h1>
-      </div>
-      <hr className="opacity-25" />
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { isFocused } = useCurrentApplication();
+  const [search, setSearch, debouncedSearch] = useDebouncedState("");
 
-      {entries.map((group) => (
-        <StartMenuApplicationListGroup group={group} key={group.title} />
+  const entries = useMemo(
+    () =>
+      Object.entries(applicationsRegistry.definitions)
+        .sort((a, b) => a[1].name.localeCompare(b[1].name))
+        .filter(([_, definition]) =>
+          definition.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+        ),
+    [applicationsRegistry, debouncedSearch]
+  );
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [isFocused]);
+
+  return (
+    <div className="flex flex-col gap-1 select-none">
+      {/* build out a proper search component with a search icon + clear button */}
+      <input
+        ref={inputRef}
+        type="text"
+        placeholder="Search for applications..."
+        value={search}
+        onInput={(e) => setSearch(e.currentTarget.value)}
+        className="w-full rounded-sm border border-neutral-200/25 focus:border-neutral-200 px-2 py-1 mb-2 outline-none"
+      />
+
+      {entries.map(([definitionId]) => (
+        <StartMenuApplicationListButton
+          key={definitionId}
+          definitionId={definitionId}
+        />
       ))}
     </div>
   );

@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import applicationsRegistry from "../applications";
-import type { Size, Position } from "@/types";
+import type { Size, Position } from "@/utils/positions";
 import { assignSafe, removeFromArray } from "@/utils";
 import { shallowEqual } from "react-redux";
 

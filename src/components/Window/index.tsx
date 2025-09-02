@@ -1,7 +1,9 @@
 import type { Application } from "@/store/applications";
 import {
+  type CSSProperties,
   type MouseEvent,
   type PropsWithChildren,
+  type ReactNode,
   useCallback,
   useMemo,
   useRef,
@@ -18,16 +20,12 @@ export interface WindowProps extends PropsWithChildren {
   application: Application;
 }
 
-function WindowContent() {
+function WindowContentWrapper({ children }: { children?: ReactNode }) {
   const {
     application: { props },
     setProps,
     focus,
-    definition: {
-      component: Component,
-      showTitleBar = true,
-      minSize = { width: 250, height: 100 },
-    },
+    definition: { minSize, draggable, resizable, style: styleProp },
     zIndex,
   } = useCurrentApplication();
   const [interacting, setInteracting] = useState(false);
@@ -42,10 +40,6 @@ function WindowContent() {
     return props.maximized ? { x: 0, y: 0 } : props.topLeft;
   }, [props.maximized, props.topLeft]);
 
-  const scaleAndOpacity = useMemo(() => {
-    return props.minimized ? 0 : 1;
-  }, [props.minimized]);
-
   const handleClick = useCallback(
     (e: MouseEvent) => {
       focus();
@@ -53,6 +47,47 @@ function WindowContent() {
     },
     [focus]
   );
+
+  const className = useMemo(
+    () =>
+      clsx({
+        // use native CSS transitions for toggling maximized state
+        "transition-all": !interacting,
+        "pointer-events-none": props.minimized,
+      }),
+    [interacting, props.minimized]
+  );
+
+  const useRnd = resizable || draggable;
+
+  const style = useMemo<CSSProperties>(
+    () => ({
+      cursor: "initial",
+      zIndex,
+      ...(!useRnd
+        ? {
+            minHeight: minSize.height,
+            minWidth: minSize.width,
+            width: size.width,
+            height: size.height,
+            position: "absolute",
+            display: "inline-block",
+            top: topLeft.y,
+            left: topLeft.x,
+          }
+        : {}),
+      ...styleProp,
+    }),
+    [zIndex]
+  );
+
+  if (!useRnd) {
+    return (
+      <div onClick={handleClick} className={className} style={style}>
+        {children}
+      </div>
+    );
+  }
 
   return (
     <Rnd
@@ -78,30 +113,43 @@ function WindowContent() {
         });
         setInteracting(false);
       }}
-      disableDragging={props.maximized}
-      enableResizing={!props.maximized}
+      disableDragging={props.maximized || !draggable}
+      enableResizing={!props.maximized && resizable}
       cancel={`.${WINDOW_CONTENT_CLASSNAME}`}
-      style={{ cursor: "initial", zIndex }}
-      className={clsx({
-        // use native CSS transitions for toggling maximized state
-        "transition-all": !interacting,
-        "pointer-events-none": props.minimized,
-      })}
+      style={style}
+      className={className}
       onClick={handleClick}
     >
+      {children}
+    </Rnd>
+  );
+}
+
+function WindowContent() {
+  const {
+    application: { props },
+    definition: { component: Component, showTitleBar },
+  } = useCurrentApplication();
+
+  const scaleAndOpacity = useMemo(() => {
+    return props.minimized ? 0 : 1;
+  }, [props.minimized]);
+
+  return (
+    <WindowContentWrapper>
       <motion.div
         exit={{ opacity: 0, scale: 0 }}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: scaleAndOpacity, scale: scaleAndOpacity }}
         transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
-        className="drop-shadow-sm flex flex-col h-full overflow-hidden"
+        className="shadow-md flex flex-col h-full overflow-hidden"
       >
         {showTitleBar ? <WindowTitleBar /> : null}
         <div className={clsx("flex-auto", WINDOW_CONTENT_CLASSNAME)}>
           <Component />
         </div>
       </motion.div>
-    </Rnd>
+    </WindowContentWrapper>
   );
 }
 

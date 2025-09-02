@@ -1,8 +1,8 @@
 import DummyApp from "@/applications/DummyApp";
-import type { Position, Size } from "@/types";
+import type { Position, Size } from "@/utils/positions";
 import { SiWikipedia } from "@icons-pack/react-simple-icons";
 import { AppWindowIcon, GamepadIcon } from "lucide-react";
-import { type ComponentProps, type FC } from "react";
+import { type ComponentProps, type CSSProperties, type FC } from "react";
 import Wikipedia from "./Wikipedia";
 import StartMenu from "./StartMenu";
 import TwentyFortyEight from "./TwentyFortyEight";
@@ -51,6 +51,10 @@ export interface ApplicationDefinition {
    * @defaultValue (250, 100)
    */
   minSize?: Size;
+  /**
+   * @defaultValue {}
+   */
+  style?: CSSProperties;
 }
 
 const DEFAULT_DEFINITION: Required<ApplicationDefinition> = {
@@ -75,6 +79,7 @@ const DEFAULT_DEFINITION: Required<ApplicationDefinition> = {
     width: 250,
     height: 100,
   },
+  style: {},
 };
 
 export interface ApplicationsRegistry {
@@ -117,8 +122,12 @@ const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
         showInTaskbar: false,
         showInStartMenu: false,
         defaultPosition: { x: 0, y: 0 },
-        defaultSize: { height: "100%", width: 300 },
+        defaultSize: { height: "60vh", width: "15vw" },
         instanceLimit: 1,
+        style: {
+          top: "initial",
+          bottom: 0,
+        },
       },
     },
     DEFAULT_DEFINITION

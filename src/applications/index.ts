@@ -1,13 +1,14 @@
 import DummyApp from "@/applications/DummyApp";
 import type { Position, Size } from "@/utils/positions";
 import { SiWikipedia } from "@icons-pack/react-simple-icons";
-import { AppWindowIcon, GamepadIcon } from "lucide-react";
+import { AppWindowIcon, GamepadIcon, SettingsIcon } from "lucide-react";
 import { type ComponentProps, type CSSProperties, type FC } from "react";
 import Wikipedia from "./Wikipedia";
 import StartMenu from "./StartMenu";
 import TwentyFortyEight from "./TwentyFortyEight";
 import { applyDefaults, deepFreeze } from "@/utils";
 import type { HTMLMotionProps } from "motion/react";
+import SystemSettings from "./SystemSettings";
 
 export interface ApplicationDefinition {
   name: string;
@@ -118,6 +119,12 @@ const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
         name: "Dummy App",
         component: DummyApp,
         icon: AppWindowIcon,
+      },
+      "system-settings": {
+        name: "System Settings",
+        component: SystemSettings,
+        instanceLimit: 1,
+        icon: SettingsIcon,
       },
       "start-menu": {
         name: "Start Menu",

@@ -6,6 +6,7 @@ import {
   type ApplicationProps,
   startCloseApplication,
   setApplicationProps,
+  finalizeCloseApplication,
 } from "@/store/applications";
 import { useFocus } from "./useFocus";
 
@@ -38,6 +39,11 @@ export function useApplication(applicationId: string) {
     [applicationId]
   );
 
+  const forceClose = useCallback(
+    () => dispatch(finalizeCloseApplication(applicationId)),
+    [applicationId]
+  );
+
   const focus = useCallback(
     () => focusApp(applicationId),
     [applicationId, focusApp]
@@ -57,6 +63,7 @@ export function useApplication(applicationId: string) {
     application,
     definition,
     close,
+    forceClose,
     setProps,
     focus,
     isFocused,

@@ -5,6 +5,7 @@ import {
   type PropsWithChildren,
   type ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -128,19 +129,25 @@ function WindowContentWrapper({ children }: { children?: ReactNode }) {
 
 function WindowContent() {
   const {
-    application: { props },
+    application: { props, state },
     definition: { component: Component, showTitleBar, getAnimationProps },
+    forceClose,
   } = useCurrentApplication();
 
   const animationProps = useMemo<HTMLMotionProps<"div">>(() => {
-    const progress = props.minimized ? 0 : 1;
+    const progress = props.minimized || state === "closing" ? 0 : 1;
     return {
       exit: { opacity: 0, scale: 0 },
       initial: { opacity: 0, scale: 0 },
       animate: { opacity: progress, scale: progress },
       ...getAnimationProps?.(progress),
+      onAnimationComplete() {
+        if (state === "closing") {
+          forceClose();
+        }
+      },
     };
-  }, [getAnimationProps, props.minimized]);
+  }, [getAnimationProps, props.minimized, state]);
 
   return (
     <WindowContentWrapper>
@@ -163,10 +170,6 @@ function WindowContent() {
 
 export default function Window(props: WindowProps) {
   const { applicationId, state } = props.application;
-
-  if (state !== "open") {
-    return null;
-  }
 
   return (
     <WindowContext.Provider value={applicationId}>

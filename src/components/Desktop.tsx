@@ -1,6 +1,6 @@
 import useAppSelector from "@/hooks/useAppSelector";
 import clsx from "clsx";
-import Window from "../Window";
+import Window from "@/components/Window";
 import { AnimatePresence } from "motion/react";
 import { useCallback, useMemo } from "react";
 import useAppDispatch from "@/hooks/useAppDispatch";

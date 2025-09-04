@@ -2,7 +2,7 @@
 
 import Desktop from "@/components/Desktop";
 import TaskBar from "@/components/TaskBar";
-import { store } from "../store";
+import { store } from "@/store";
 import { Provider } from "react-redux";
 import Image from "next/image";
 import { useFocus } from "@/hooks/useFocus";

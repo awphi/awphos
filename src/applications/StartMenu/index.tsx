@@ -3,7 +3,13 @@ import React, { useEffect } from "react";
 import { StartMenuApplicationList } from "./ApplicationList";
 
 export default function StartMenu() {
-  const { isFocused, setProps } = useCurrentApplication();
+  const {
+    isFocused,
+    setProps,
+    application: {
+      props: { minimized },
+    },
+  } = useCurrentApplication();
 
   useEffect(() => {
     if (!isFocused) {
@@ -13,7 +19,7 @@ export default function StartMenu() {
 
   return (
     <div className="bg-neutral-900/70 p-4 backdrop-blur-lg h-full mt-auto flex flex-col gap-1">
-      <StartMenuApplicationList></StartMenuApplicationList>
+      {minimized ? null : <StartMenuApplicationList></StartMenuApplicationList>}
     </div>
   );
 }

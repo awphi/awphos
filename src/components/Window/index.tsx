@@ -14,7 +14,8 @@ import WindowTitleBar from "./TitleBar";
 import clsx from "clsx";
 import { WINDOW_CONTENT_CLASSNAME, WindowContext } from "./constants";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
-import { motion } from "motion/react";
+import { motion, type HTMLMotionProps } from "motion/react";
+import { twMerge } from "tailwind-merge";
 
 export interface WindowProps extends PropsWithChildren {
   application: Application;
@@ -128,21 +129,28 @@ function WindowContentWrapper({ children }: { children?: ReactNode }) {
 function WindowContent() {
   const {
     application: { props },
-    definition: { component: Component, showTitleBar },
+    definition: { component: Component, showTitleBar, getAnimationProps },
   } = useCurrentApplication();
 
-  const scaleAndOpacity = useMemo(() => {
-    return props.minimized ? 0 : 1;
-  }, [props.minimized]);
+  const animationProps = useMemo<HTMLMotionProps<"div">>(() => {
+    const progress = props.minimized ? 0 : 1;
+    return {
+      exit: { opacity: 0, scale: 0 },
+      initial: { opacity: 0, scale: 0 },
+      animate: { opacity: progress, scale: progress },
+      ...getAnimationProps?.(progress),
+    };
+  }, [getAnimationProps, props.minimized]);
 
   return (
     <WindowContentWrapper>
       <motion.div
-        exit={{ opacity: 0, scale: 0 }}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: scaleAndOpacity, scale: scaleAndOpacity }}
         transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
-        className="shadow-md flex flex-col h-full overflow-hidden"
+        {...animationProps}
+        className={twMerge(
+          "shadow-md flex flex-col h-full overflow-hidden",
+          animationProps.className
+        )}
       >
         {showTitleBar ? <WindowTitleBar /> : null}
         <div className={clsx("flex-auto", WINDOW_CONTENT_CLASSNAME)}>

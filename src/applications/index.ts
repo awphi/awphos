@@ -7,6 +7,7 @@ import Wikipedia from "./Wikipedia";
 import StartMenu from "./StartMenu";
 import TwentyFortyEight from "./TwentyFortyEight";
 import { applyDefaults, deepFreeze } from "@/utils";
+import type { HTMLMotionProps } from "motion/react";
 
 export interface ApplicationDefinition {
   name: string;
@@ -52,9 +53,14 @@ export interface ApplicationDefinition {
    */
   minSize?: Size;
   /**
+   * CSS properties to apply to the drag-and-drop wrapper component
    * @defaultValue {}
    */
   style?: CSSProperties;
+  /**
+   * @defaultValue null
+   */
+  getAnimationProps?: ((progress: number) => HTMLMotionProps<"div">) | null;
 }
 
 const DEFAULT_DEFINITION: Required<ApplicationDefinition> = {
@@ -80,6 +86,7 @@ const DEFAULT_DEFINITION: Required<ApplicationDefinition> = {
     height: 100,
   },
   style: {},
+  getAnimationProps: null,
 };
 
 export interface ApplicationsRegistry {
@@ -123,10 +130,19 @@ const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
         showInStartMenu: false,
         defaultPosition: { x: 0, y: 0 },
         defaultSize: { height: "60vh", width: "15vw" },
+        minSize: { width: 300, height: "60vh" },
         instanceLimit: 1,
         style: {
           top: "initial",
           bottom: 0,
+        },
+        getAnimationProps: (progress) => {
+          return {
+            exit: { opacity: 0, scaleY: 0 },
+            initial: { opacity: 0, scaleY: 0 },
+            animate: { opacity: progress, scaleY: progress },
+            className: "origin-bottom",
+          };
         },
       },
     },

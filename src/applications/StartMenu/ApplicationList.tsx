@@ -1,10 +1,10 @@
-import applicationsRegistry, { type ApplicationsRegistry } from "..";
-import { useEffect, useMemo, useRef } from "react";
+import applicationsRegistry from "..";
+import { useMemo } from "react";
 import { openApplication } from "@/store/applications";
 import useAppDispatch from "@/hooks/useAppDispatch";
-import useCurrentApplication from "@/hooks/useCurrentApplication";
 import { useDebouncedState } from "@/hooks/useDebouncedState";
 import { motion } from "motion/react";
+import Input from "@/components/Input";
 
 function StartMenuApplicationListButton({
   definitionId,
@@ -34,8 +34,6 @@ function StartMenuApplicationListButton({
 }
 
 export function StartMenuApplicationList() {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { isFocused } = useCurrentApplication();
   const [search, setSearch, debouncedSearch] = useDebouncedState("");
 
   const entries = useMemo(
@@ -49,22 +47,14 @@ export function StartMenuApplicationList() {
     [applicationsRegistry, debouncedSearch]
   );
 
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [isFocused]);
-
   return (
     <div className="flex flex-col gap-1 select-none">
-      {/* build out a proper search component with a search icon + clear button */}
-      <input
-        ref={inputRef}
-        type="text"
-        placeholder="Search for applications..."
+      <Input
+        className="mb-2"
         value={search}
-        onInput={(e) => setSearch(e.currentTarget.value)}
-        className="w-full rounded-sm border border-neutral-200/25 focus:border-neutral-200 px-2 py-1 mb-2 outline-none"
+        onChange={setSearch}
+        autoFocus={true}
       />
-
       {entries.map(([definitionId]) => (
         <StartMenuApplicationListButton
           key={definitionId}

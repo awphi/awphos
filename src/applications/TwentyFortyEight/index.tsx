@@ -7,7 +7,7 @@ import {
   type TwentyFortyEightTile,
 } from "./board";
 import { motion } from "motion/react";
-import clsx from "clsx";
+import { cn } from "@/utils";
 
 // indexed by (Math.log2(value) - 1) % colors.length
 const TILE_COLORS = [
@@ -31,12 +31,6 @@ function TwentyFortyEightTile({
 }: {
   tile: TwentyFortyEightTile;
 }) {
-  const bgClass =
-    value === 0
-      ? "bg-neutral-400"
-      : TILE_COLORS[(Math.log2(value) - 1) % TILE_COLORS.length];
-  const fontSizeClass = TILE_FONT_SIZES[value.toString().length - 1];
-
   return (
     <motion.div
       layout
@@ -44,10 +38,12 @@ function TwentyFortyEightTile({
       initial={isNew ? { opacity: 0, scale: 0 } : false}
       animate={{ opacity: 1, scale: 1 }}
       style={{ zIndex: value }}
-      className={clsx(
+      className={cn(
         "w-16 h-16 flex justify-center absolute items-center text-neutral-600 font-bold",
-        bgClass,
-        fontSizeClass
+        value === 0
+          ? "bg-neutral-400"
+          : TILE_COLORS[(Math.log2(value) - 1) % TILE_COLORS.length],
+        TILE_FONT_SIZES[value.toString().length - 1]
       )}
     >
       <span>{value}</span>

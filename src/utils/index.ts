@@ -1,3 +1,6 @@
+import clsx, { type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 export function removeFromArray<T>(arr: T[], item: T): boolean {
   const idx = arr.indexOf(item);
   if (idx !== -1) {
@@ -56,4 +59,8 @@ export function deepFreeze<T extends {}>(
     }
   }
   return fn(object);
+}
+
+export function cn(...args: ClassValue[]) {
+  return twMerge(clsx(args));
 }

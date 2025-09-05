@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/utils";
 import { motion } from "motion/react";
 import type { ComponentProps } from "react";
 
@@ -10,7 +10,7 @@ export default function TaskBarIcon(props: TaskBarIconProps) {
     <motion.button
       {...props}
       whileTap={{ scale: 0.95 }}
-      className={clsx(
+      className={cn(
         "h-full flex center justify-center items-center rounded-sm hover:bg-neutral-200/5 transition-colors",
         props.className
       )}

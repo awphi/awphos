@@ -5,18 +5,16 @@ import {
   type PropsWithChildren,
   type ReactNode,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import { Rnd } from "react-rnd";
 import WindowTitleBar from "./TitleBar";
-import clsx from "clsx";
 import { WINDOW_CONTENT_CLASSNAME, WindowContext } from "./constants";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 import { motion, type HTMLMotionProps } from "motion/react";
-import { twMerge } from "tailwind-merge";
+import { cn } from "@/utils";
 
 export interface WindowProps extends PropsWithChildren {
   application: Application;
@@ -52,7 +50,7 @@ function WindowContentWrapper({ children }: { children?: ReactNode }) {
 
   const className = useMemo(
     () =>
-      clsx({
+      cn({
         // use native CSS transitions for toggling maximized state
         "transition-all": !interacting,
         "pointer-events-none": props.minimized,
@@ -154,13 +152,13 @@ function WindowContent() {
       <motion.div
         transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
         {...animationProps}
-        className={twMerge(
+        className={cn(
           "shadow-md flex flex-col h-full overflow-hidden",
           animationProps.className
         )}
       >
         {showTitleBar ? <WindowTitleBar /> : null}
-        <div className={clsx("flex-auto", WINDOW_CONTENT_CLASSNAME)}>
+        <div className={cn("flex-auto", WINDOW_CONTENT_CLASSNAME)}>
           <Component />
         </div>
       </motion.div>

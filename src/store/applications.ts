@@ -42,16 +42,6 @@ export interface ApplicationOpenArgs {
   props?: Partial<ApplicationProps>;
 }
 
-const defaultWindowSize: Size = {
-  width: 500,
-  height: 300,
-};
-
-const defaultWindowPosition: Position = {
-  x: 100,
-  y: 100,
-};
-
 export const activeApplicationsSlice = createSlice({
   name: "applications",
   initialState: {

@@ -1,15 +1,15 @@
-import clsx from "clsx";
 import { X, Maximize2, Minimize2, Minus } from "lucide-react";
 import { WINDOW_CONTENT_CLASSNAME } from "./constants";
 import applicationsRegistry from "@/applications";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 import type { ComponentProps } from "react";
+import { cn } from "@/utils";
 
 function WindowTitleBarButton(props: ComponentProps<"button">) {
   return (
     <button
       {...props}
-      className={clsx(
+      className={cn(
         "h-full w-[42px] flex items-center justify-center hover:bg-neutral-500/75 transition-colors",
         WINDOW_CONTENT_CLASSNAME,
         props.className
@@ -32,7 +32,7 @@ export default function WindowTitleBar() {
 
   return (
     <div
-      className={clsx(
+      className={cn(
         "flex items-center select-none pl-2 justify-between min-h-[32px]",
         isFocused ? "bg-neutral-800" : "bg-neutral-700"
       )}

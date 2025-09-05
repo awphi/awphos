@@ -4,7 +4,7 @@ import { type MouseEvent, useCallback, useMemo } from "react";
 import useAppDispatch from "@/hooks/useAppDispatch";
 import { openApplication, setApplicationProps } from "@/store/applications";
 import { useFocus } from "@/hooks/useFocus";
-import clsx from "clsx";
+import { cn } from "@/utils";
 
 export interface TaskBarApplicationIconProps {
   definitionId: string;
@@ -27,6 +27,7 @@ export default function TaskBarApplicationIcon({
 
   const handleClick = useCallback(
     (e: MouseEvent) => {
+      console.log(applicationIds);
       if (applicationIds.length === 0) {
         dispatch(openApplication({ definitionId }));
       } else if (applicationIds.length === 1) {
@@ -55,7 +56,7 @@ export default function TaskBarApplicationIcon({
   return (
     <TaskBarIcon
       onClick={handleClick}
-      className={clsx(
+      className={cn(
         {
           "bg-neutral-200/5": isSomeInstanceFocused,
         },
@@ -72,7 +73,7 @@ export default function TaskBarApplicationIcon({
       >
         <Icon />
         <div
-          className={clsx(
+          className={cn(
             "absolute bottom-0.5 w-2 h-1 rounded-sm transition-all",
             isSomeInstanceFocused ? "bg-primary-400" : "bg-neutral-400",
             {

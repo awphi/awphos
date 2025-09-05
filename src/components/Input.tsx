@@ -1,6 +1,6 @@
+import { cn } from "@/utils";
 import { Search, X } from "lucide-react";
 import { useEffect, useRef, type ComponentProps } from "react";
-import { twMerge } from "tailwind-merge";
 
 export interface InputProps extends Omit<ComponentProps<"div">, "onChange"> {
   onChange?: (value: string) => void;
@@ -24,7 +24,7 @@ export default function Input({
   return (
     <div
       {...props}
-      className={twMerge("relative flex items-center", props.className)}
+      className={cn("relative flex items-center", props.className)}
     >
       <input
         ref={inputRef}
@@ -32,7 +32,7 @@ export default function Input({
         placeholder="Search for applications..."
         value={value}
         onInput={(e) => onChange?.(e.currentTarget.value)}
-        className={twMerge(
+        className={cn(
           "w-full h-9 rounded-sm border border-neutral-200/25 focus:border-neutral-200 py-1 outline-none",
           value ? "pl-2 pr-7" : "pl-7 pr-2"
         )}

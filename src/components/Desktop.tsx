@@ -1,7 +1,7 @@
 import useAppSelector from "@/hooks/useAppSelector";
-import clsx from "clsx";
 import Window from "@/components/Window";
 import { useMemo } from "react";
+import { cn } from "@/utils";
 
 export default function Desktop() {
   const applications = useAppSelector(
@@ -13,7 +13,7 @@ export default function Desktop() {
   );
 
   return (
-    <div className={clsx("w-full flex-auto relative")}>
+    <div className={cn("w-full flex-auto relative")}>
       {applicationsList.map((app) => (
         <Window key={app.applicationId} application={app}></Window>
       ))}

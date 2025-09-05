@@ -6,8 +6,9 @@ import {
   type TwentyFortyEightBoard,
   type TwentyFortyEightTile,
 } from "./board";
-import { motion } from "motion/react";
+import { motion, useDomEvent } from "motion/react";
 import { cn } from "@/utils";
+import { useWindowEvent } from "@/hooks/useWindowEvent";
 
 // indexed by (Math.log2(value) - 1) % colors.length
 const TILE_COLORS = [
@@ -74,8 +75,9 @@ export default function TwentyFortyEight() {
   const { isFocused } = useCurrentApplication();
   const [board, setBoard] = useState(makeBoard(4));
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+  useWindowEvent(
+    "keydown",
+    (e) => {
       if (!isFocused) {
         return;
       }
@@ -89,13 +91,9 @@ export default function TwentyFortyEight() {
       } else if (3 <= maybeInt && maybeInt <= 8) {
         setBoard(makeBoard(maybeInt));
       }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isFocused, board, setBoard]);
+    },
+    [isFocused, board]
+  );
 
   // TODO some sort of help menu for the controls
   return (

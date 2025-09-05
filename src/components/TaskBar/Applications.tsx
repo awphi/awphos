@@ -20,18 +20,14 @@ function getTaskBarApplications(
       return;
     }
 
-    if (applicationId && applications[applicationId]?.state !== "open") {
-      return;
-    }
-
-    if (!(definitionId in result)) {
+    if (!result.has(definitionId)) {
       result.set(definitionId, {
         definitionId,
         applicationIds: [],
       });
     }
 
-    if (applicationId) {
+    if (applicationId && applications[applicationId]?.state === "open") {
       result.get(definitionId)!.applicationIds.push(applicationId);
     }
   }
@@ -55,6 +51,8 @@ export default function TaskBarApplications() {
     () => getTaskBarApplications(applications),
     [applications]
   );
+
+  console.log(structuredClone(applications), taskbarApplications);
 
   return (
     <div className="flex flex-auto gap-1">

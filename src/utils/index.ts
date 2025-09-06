@@ -65,14 +65,9 @@ export function cn(...args: ClassValue[]) {
   return twMerge(clsx(args));
 }
 
-export function throttle<T extends unknown[]>(
-  callback?: (...args: T) => void,
-  delay: number = 16 // 60(ish) fps
+export function oncePerFrame<T extends unknown[]>(
+  callback: (...args: T) => void
 ) {
-  if (callback === undefined) {
-    return undefined;
-  }
-
   let isWaiting = false;
 
   return (...args: T) => {
@@ -83,8 +78,8 @@ export function throttle<T extends unknown[]>(
     callback(...args);
     isWaiting = true;
 
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       isWaiting = false;
-    }, delay);
+    });
   };
 }

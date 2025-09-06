@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import TaskBarIcon from "./Icon";
 import TaskBarApplications from "./Applications";
 import TaskBarStartMenuIcon from "./StartMenuIcon";
+import { TASK_BAR_HEIGHT } from "./constants";
 
 export default function TaskBar() {
   const date = useDate({ updateInterval: 1000 * 60 });
@@ -20,7 +21,7 @@ export default function TaskBar() {
   return (
     <div
       className="w-full flex bg-neutral-800/70 gap-1 backdrop-blur-lg px-3 pb-1.5 py-1 select-none"
-      style={{ zIndex: 1_000_000 }}
+      style={{ zIndex: 1_000_000, height: TASK_BAR_HEIGHT }}
     >
       <TaskBarStartMenuIcon />
       <TaskBarApplications />

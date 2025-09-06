@@ -8,12 +8,16 @@ import {
   useRef,
 } from "react";
 import WindowTitleBar from "./TitleBar";
-import { WINDOW_CONTENT_CLASSNAME, WindowContext } from "./constants";
+import {
+  WINDOW_CONTENT_CLASSNAME,
+  WINDOW_TITLE_BAR_HEIGHT,
+  WindowContext,
+} from "./constants";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 import { motion, type HTMLMotionProps } from "motion/react";
 import { cn } from "@/utils";
 import { useDraggable } from "@/hooks/useDraggable";
-import type { Position } from "@/utils/positions";
+import { TASK_BAR_HEIGHT } from "../TaskBar/constants";
 
 export interface WindowProps extends PropsWithChildren {
   application: Application;
@@ -44,25 +48,23 @@ function WindowContent() {
   const dragHandleRef = useRef<HTMLDivElement | null>(null);
   const windowRef = useRef<HTMLDivElement | null>(null);
 
-  const handleClick = useCallback(
-    (e: MouseEvent) => {
-      focus();
-      e.stopPropagation();
-    },
-    [focus]
-  );
-
-  const onDragMove = useCallback((position: Position) => {
-    setProps({
-      topLeft: position,
-    });
-  }, []);
-
   const { dragging } = useDraggable({
     elementRef: windowRef,
     handleRef: dragHandleRef,
-    disabled: !draggable,
-    onDragMove,
+    disabled: !draggable || maximized,
+    onDragMove: (position) =>
+      setProps({
+        topLeft: position,
+      }),
+    onDragEnd: () => {
+      const maxY =
+        window.innerHeight - TASK_BAR_HEIGHT - WINDOW_TITLE_BAR_HEIGHT;
+      if (topLeft.y >= maxY) {
+        setProps({ topLeft: { x: topLeft.x, y: maxY } });
+        // window can lose focus here for some reason so quick hack to fix that:
+        requestAnimationFrame(() => focus());
+      }
+    },
   });
 
   const renderedPosition = useMemo(() => {
@@ -114,7 +116,8 @@ function WindowContent() {
 
   return (
     <motion.div
-      onClick={handleClick}
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={() => focus()}
       ref={windowRef}
       transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
       className={cn(

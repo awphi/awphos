@@ -1,5 +1,5 @@
 import { X, Maximize2, Minimize2, Minus } from "lucide-react";
-import { WINDOW_CONTENT_CLASSNAME } from "./constants";
+import { WINDOW_CONTENT_CLASSNAME, WINDOW_TITLE_BAR_HEIGHT } from "./constants";
 import applicationsRegistry from "@/applications";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 import type { ComponentProps, RefObject } from "react";
@@ -37,9 +37,13 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
   return (
     <div
       className={cn(
-        "flex items-center select-none justify-between h-[32px] min-h-[32px]",
+        "flex items-center select-none justify-between",
         isFocused ? "bg-neutral-800" : "bg-neutral-700"
       )}
+      style={{
+        height: WINDOW_TITLE_BAR_HEIGHT,
+        minHeight: WINDOW_TITLE_BAR_HEIGHT,
+      }}
     >
       <div
         ref={dragHandle}

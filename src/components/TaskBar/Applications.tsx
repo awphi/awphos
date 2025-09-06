@@ -52,8 +52,6 @@ export default function TaskBarApplications() {
     [applications]
   );
 
-  console.log(structuredClone(applications), taskbarApplications);
-
   return (
     <div className="flex flex-auto gap-1">
       {taskbarApplications.map((props) => (

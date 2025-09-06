@@ -64,3 +64,27 @@ export function deepFreeze<T extends {}>(
 export function cn(...args: ClassValue[]) {
   return twMerge(clsx(args));
 }
+
+export function throttle<T extends unknown[]>(
+  callback?: (...args: T) => void,
+  delay: number = 16 // 60(ish) fps
+) {
+  if (callback === undefined) {
+    return undefined;
+  }
+
+  let isWaiting = false;
+
+  return (...args: T) => {
+    if (isWaiting) {
+      return;
+    }
+
+    callback(...args);
+    isWaiting = true;
+
+    setTimeout(() => {
+      isWaiting = false;
+    }, delay);
+  };
+}

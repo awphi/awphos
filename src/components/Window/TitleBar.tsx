@@ -2,7 +2,7 @@ import { X, Maximize2, Minimize2, Minus } from "lucide-react";
 import { WINDOW_CONTENT_CLASSNAME } from "./constants";
 import applicationsRegistry from "@/applications";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
-import type { ComponentProps } from "react";
+import type { ComponentProps, RefObject } from "react";
 import { cn } from "@/utils";
 
 function WindowTitleBarButton(props: ComponentProps<"button">) {
@@ -20,7 +20,11 @@ function WindowTitleBarButton(props: ComponentProps<"button">) {
   );
 }
 
-export default function WindowTitleBar() {
+export interface WindowTitleBarProps {
+  dragHandle?: RefObject<HTMLDivElement | null>;
+}
+
+export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
   const {
     application: { props, definitionId },
     setProps,
@@ -33,11 +37,14 @@ export default function WindowTitleBar() {
   return (
     <div
       className={cn(
-        "flex items-center select-none pl-2 justify-between min-h-[32px]",
+        "flex items-center select-none justify-between h-[32px] min-h-[32px]",
         isFocused ? "bg-neutral-800" : "bg-neutral-700"
       )}
     >
-      <div className="flex gap-2 items-center">
+      <div
+        ref={dragHandle}
+        className="pl-2 flex-1 h-full flex gap-2 items-center"
+      >
         <Icon width={16} height={16} />
         <p>{props.title}</p>
       </div>

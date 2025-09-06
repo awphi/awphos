@@ -27,7 +27,6 @@ export default function TaskBarApplicationIcon({
 
   const handleClick = useCallback(
     (e: MouseEvent) => {
-      console.log(applicationIds);
       if (applicationIds.length === 0) {
         dispatch(openApplication({ definitionId }));
       } else if (applicationIds.length === 1) {

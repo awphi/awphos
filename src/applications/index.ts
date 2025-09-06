@@ -7,7 +7,7 @@ import Wikipedia from "./Wikipedia";
 import StartMenu from "./StartMenu";
 import TwentyFortyEight from "./TwentyFortyEight";
 import { applyDefaults, deepFreeze } from "@/utils";
-import type { HTMLMotionProps } from "motion/react";
+import type { HTMLMotionProps, TargetAndTransition } from "motion/react";
 import SystemSettings from "./SystemSettings";
 
 export interface ApplicationDefinition {
@@ -54,14 +54,17 @@ export interface ApplicationDefinition {
    */
   minSize?: Size;
   /**
-   * CSS properties to apply to the drag-and-drop wrapper component
-   * @defaultValue {}
+   * @default ""
    */
-  style?: CSSProperties;
+  className?: HTMLMotionProps<"div">["className"];
   /**
-   * @defaultValue null
+   * @default {}
    */
-  getAnimationProps?: ((progress: number) => HTMLMotionProps<"div">) | null;
+  style?: HTMLMotionProps<"div">["style"];
+  /**
+   * @default ['opacity', 'scale']
+   */
+  animatedProps?: (keyof TargetAndTransition)[];
 }
 
 const DEFAULT_DEFINITION: Required<ApplicationDefinition> = {
@@ -86,8 +89,9 @@ const DEFAULT_DEFINITION: Required<ApplicationDefinition> = {
     width: 250,
     height: 100,
   },
+  className: "",
   style: {},
-  getAnimationProps: null,
+  animatedProps: ["scale", "opacity"],
 };
 
 export interface ApplicationsRegistry {
@@ -139,18 +143,9 @@ const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
         defaultSize: { height: "60vh", width: "15vw" },
         minSize: { width: 300, height: "60vh" },
         instanceLimit: 1,
-        style: {
-          top: "initial",
-          bottom: 0,
-        },
-        getAnimationProps: (progress) => {
-          return {
-            exit: { opacity: 0, scaleY: 0 },
-            initial: { opacity: 0, scaleY: 0 },
-            animate: { opacity: progress, scaleY: progress },
-            className: "origin-bottom",
-          };
-        },
+        className: "origin-bottom",
+        style: { bottom: 0 },
+        animatedProps: ["opacity", "scaleY"],
       },
     },
     DEFAULT_DEFINITION

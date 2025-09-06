@@ -1,44 +1,48 @@
 import type { Application } from "@/store/applications";
 import {
-  type CSSProperties,
   type MouseEvent,
   type PropsWithChildren,
-  type ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
-  useState,
 } from "react";
-import { Rnd } from "react-rnd";
 import WindowTitleBar from "./TitleBar";
 import { WINDOW_CONTENT_CLASSNAME, WindowContext } from "./constants";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 import { motion, type HTMLMotionProps } from "motion/react";
 import { cn } from "@/utils";
+import { useDraggable } from "@/hooks/useDraggable";
+import type { Position } from "@/utils/positions";
 
 export interface WindowProps extends PropsWithChildren {
   application: Application;
 }
 
-function WindowContentWrapper({ children }: { children?: ReactNode }) {
+// TODO re-add resizing - CSS resize property was a bit dodgy: weird animations, doesn't support bounding, broken w/ iframes in chrome
+function WindowContent() {
   const {
-    application: { props },
-    setProps,
+    application: {
+      props: { maximized, topLeft, size, minimized },
+      state,
+    },
+    definition: {
+      component: Component,
+      showTitleBar,
+      draggable,
+      resizable,
+      minSize,
+      animatedProps,
+      style: styleProp,
+      className,
+    },
+    forceClose,
     focus,
-    definition: { minSize, draggable, resizable, style: styleProp },
+    setProps,
     zIndex,
   } = useCurrentApplication();
-  const [interacting, setInteracting] = useState(false);
-
-  const rndRef = useRef<Rnd>(null);
-
-  const size = useMemo(() => {
-    return props.maximized ? { width: "100%", height: "100%" } : props.size;
-  }, [props.maximized, props.size]);
-
-  const topLeft = useMemo(() => {
-    return props.maximized ? { x: 0, y: 0 } : props.topLeft;
-  }, [props.maximized, props.topLeft]);
+  const dragHandleRef = useRef<HTMLDivElement | null>(null);
+  const windowRef = useRef<HTMLDivElement | null>(null);
 
   const handleClick = useCallback(
     (e: MouseEvent) => {
@@ -48,126 +52,97 @@ function WindowContentWrapper({ children }: { children?: ReactNode }) {
     [focus]
   );
 
-  const className = useMemo(
-    () =>
-      cn({
-        // use native CSS transitions for toggling maximized state
-        "transition-all": !interacting,
-        "pointer-events-none": props.minimized,
-      }),
-    [interacting, props.minimized]
-  );
+  const onDragMove = useCallback((position: Position) => {
+    setProps({
+      topLeft: position,
+    });
+  }, []);
 
-  const useRnd = resizable || draggable;
+  const { dragging } = useDraggable({
+    elementRef: windowRef,
+    handleRef: dragHandleRef,
+    disabled: !draggable,
+    onDragMove,
+  });
 
-  const style = useMemo<CSSProperties>(
-    () => ({
-      cursor: "initial",
-      zIndex,
-      ...(!useRnd
-        ? {
-            minHeight: minSize.height,
-            minWidth: minSize.width,
-            width: size.width,
-            height: size.height,
-            position: "absolute",
-            display: "inline-block",
-            top: topLeft.y,
-            left: topLeft.x,
-          }
-        : {}),
-      ...styleProp,
-    }),
-    [zIndex]
-  );
+  const renderedPosition = useMemo(() => {
+    return {
+      translateX: maximized ? 0 : topLeft.x,
+      translateY: maximized ? 0 : topLeft.y,
+    };
+  }, [maximized, topLeft]);
 
-  if (!useRnd) {
-    return (
-      <div onClick={handleClick} className={className} style={style}>
-        {children}
-      </div>
-    );
-  }
-
-  return (
-    <Rnd
-      size={size}
-      ref={rndRef}
-      position={topLeft}
-      minHeight={minSize.height}
-      minWidth={minSize.width}
-      onDragStart={() => {
-        setInteracting(true);
-      }}
-      onDragStop={(_, { x, y }) => {
-        setProps({ topLeft: { x, y } });
-        setInteracting(false);
-      }}
-      onResizeStart={() => {
-        setInteracting(true);
-      }}
-      onResizeStop={(_e, _dir, ref, _delta, { x, y }) => {
-        setProps({
-          size: { width: ref.offsetWidth, height: ref.offsetHeight },
-          topLeft: { x, y },
-        });
-        setInteracting(false);
-      }}
-      disableDragging={props.maximized || !draggable}
-      enableResizing={!props.maximized && resizable}
-      cancel={`.${WINDOW_CONTENT_CLASSNAME}`}
-      style={style}
-      className={className}
-      onClick={handleClick}
-    >
-      {children}
-    </Rnd>
-  );
-}
-
-function WindowContent() {
-  const {
-    application: { props, state },
-    definition: { component: Component, showTitleBar, getAnimationProps },
-    forceClose,
-  } = useCurrentApplication();
+  const renderedSize = useMemo(() => {
+    return {
+      width: maximized ? "100%" : size.width,
+      height: maximized ? "100%" : size.height,
+    };
+  }, [maximized, size]);
 
   const animationProps = useMemo<HTMLMotionProps<"div">>(() => {
-    const progress = props.minimized || state === "closing" ? 0 : 1;
+    const progress = minimized || state === "closing" ? 0 : 1;
+    const initialAndExit = Object.fromEntries(animatedProps.map((v) => [v, 0]));
     return {
-      exit: { opacity: 0, scale: 0 },
-      initial: { opacity: 0, scale: 0 },
-      animate: { opacity: progress, scale: progress },
-      ...getAnimationProps?.(progress),
-      onAnimationComplete() {
+      exit: initialAndExit,
+      initial: initialAndExit,
+      animate: {
+        ...Object.fromEntries(animatedProps.map((v) => [v, progress])),
+        ...renderedSize,
+        // only animate position when not dragging
+        ...(dragging ? undefined : renderedPosition),
+      },
+    };
+  }, [
+    renderedSize,
+    renderedPosition,
+    dragging,
+    minimized,
+    state,
+    animatedProps,
+  ]);
+
+  const style = useMemo<HTMLMotionProps<"div">["style"]>(() => {
+    return {
+      ...renderedPosition,
+      ...renderedSize,
+      ...styleProp,
+      minWidth: minSize.width,
+      minHeight: minSize.height,
+      zIndex,
+    };
+  }, [renderedPosition, renderedSize, styleProp, resizable, minSize, zIndex]);
+
+  return (
+    <motion.div
+      onClick={handleClick}
+      ref={windowRef}
+      transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
+      className={cn(
+        "shadow-md flex flex-col overflow-hidden absolute",
+        className
+      )}
+      style={style}
+      onAnimationComplete={() => {
         if (state === "closing") {
           forceClose();
         }
-      },
-    };
-  }, [getAnimationProps, props.minimized, state]);
-
-  return (
-    <WindowContentWrapper>
-      <motion.div
-        transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
-        {...animationProps}
-        className={cn(
-          "shadow-md flex flex-col h-full overflow-hidden",
-          animationProps.className
-        )}
+      }}
+      {...animationProps}
+    >
+      {showTitleBar ? <WindowTitleBar dragHandle={dragHandleRef} /> : null}
+      <div
+        className={cn("flex-auto", "overflow-auto", WINDOW_CONTENT_CLASSNAME, {
+          "pointer-events-none": dragging,
+        })}
       >
-        {showTitleBar ? <WindowTitleBar /> : null}
-        <div className={cn("flex-auto", WINDOW_CONTENT_CLASSNAME)}>
-          <Component />
-        </div>
-      </motion.div>
-    </WindowContentWrapper>
+        <Component />
+      </div>
+    </motion.div>
   );
 }
 
 export default function Window(props: WindowProps) {
-  const { applicationId, state } = props.application;
+  const { applicationId } = props.application;
 
   return (
     <WindowContext.Provider value={applicationId}>

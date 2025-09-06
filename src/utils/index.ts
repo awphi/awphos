@@ -97,3 +97,13 @@ export function pointInRect(point: Position, rect: Rect): boolean {
 export function clamp(val: number, min: number, max: number): number {
   return Math.max(min, Math.min(val, max));
 }
+
+export function stringToColor(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  // Generate color
+  const c = (hash & 0x00ffffff).toString(16).toUpperCase();
+  return "#" + "00000".substring(0, 6 - c.length) + c;
+}

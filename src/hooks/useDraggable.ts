@@ -5,7 +5,7 @@ import { useWindowEvent } from "./useWindowEvent";
 
 export interface UseDraggableArgs {
   handleRef?: RefObject<HTMLElement | null>;
-  elementRef: RefObject<HTMLElement | null>;
+  elementRef?: RefObject<HTMLElement | null>;
   disabled?: boolean;
   onDragMove?: (position: Position) => void;
   onDragEnd?: () => void;
@@ -80,12 +80,12 @@ export function useDraggable({
   );
 
   useEffect(() => {
-    const el = elementRef.current;
+    const el = elementRef?.current;
     const handle = handleRef ? handleRef.current : el;
 
-    if (handle && el && !disabled) {
+    if (handle && !disabled) {
       const startDrag = (event: PointerEvent) => {
-        const rect = el.getBoundingClientRect();
+        const rect = el?.getBoundingClientRect() ?? { left: 0, top: 0 };
         setDragOffset({
           x: event.clientX - rect.left,
           y: event.clientY - rect.top,

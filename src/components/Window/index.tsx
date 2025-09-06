@@ -3,6 +3,7 @@ import { type PropsWithChildren, useCallback, useMemo, useRef } from "react";
 import WindowTitleBar from "./TitleBar";
 import {
   WINDOW_CONTENT_CLASSNAME,
+  WINDOW_DRAG_HANDLE_SIZE,
   WINDOW_TITLE_BAR_HEIGHT,
   WindowContext,
 } from "./constants";
@@ -12,6 +13,7 @@ import { cn } from "@/utils";
 import { useDraggable } from "@/hooks/useDraggable";
 import { TASK_BAR_HEIGHT } from "../TaskBar/constants";
 import type { Position } from "@/utils/positions";
+import WindowResizeHandles from "./ResizeHandles";
 
 export interface WindowProps extends PropsWithChildren {
   application: Application;
@@ -120,7 +122,7 @@ function Window() {
       ref={windowRef}
       transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
       className={cn(
-        "shadow-md flex flex-col overflow-hidden absolute",
+        "shadow-md flex flex-col absolute overflow-visible",
         className
       )}
       style={style}
@@ -131,6 +133,7 @@ function Window() {
       }}
       {...animationProps}
     >
+      {resizable ? <WindowResizeHandles /> : null}
       {showTitleBar ? <WindowTitleBar dragHandle={dragHandleRef} /> : null}
       <div
         className={cn("flex-auto", "overflow-auto", WINDOW_CONTENT_CLASSNAME, {

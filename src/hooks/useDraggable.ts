@@ -1,6 +1,6 @@
-import type { Position } from "@/utils/positions";
+import type { Position, Rect } from "@/utils/positions";
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { oncePerFrame } from "@/utils";
+import { clamp, oncePerFrame, pointInRect } from "@/utils";
 import { useWindowEvent } from "./useWindowEvent";
 
 export interface UseDraggableArgs {
@@ -9,7 +9,7 @@ export interface UseDraggableArgs {
   disabled?: boolean;
   onDragMove?: (position: Position) => void;
   onDragEnd?: () => void;
-  restrictToWindow?: boolean;
+  restrictToWindow?: boolean; // TODO could be more generic and support arbitrary rects via element ref
 }
 
 export function useDraggable({
@@ -18,6 +18,7 @@ export function useDraggable({
   disabled,
   onDragMove,
   onDragEnd,
+  restrictToWindow,
 }: UseDraggableArgs) {
   const [dragOffset, setDragOffset] = useState<Position | null>(null);
   const [dragged, setDragged] = useState(false);
@@ -32,18 +33,38 @@ export function useDraggable({
       if (dragOffset) {
         setDragged(true);
         if (throttledOnDragMove) {
-          const pos: Position = {
-            x: event.clientX - dragOffset.x,
-            y: event.clientY - dragOffset.y,
-          };
+          const eventPos: Position = { x: event.clientX, y: event.clientY };
 
-          // TODO don't call handler if drag is outside the viewport
-          // TODO (bonus) keep last position so we can find the exact event that went outside the viewport and clamp
-          throttledOnDragMove(pos);
+          if (restrictToWindow) {
+            const windowRect: Rect = {
+              x: 0,
+              y: 0,
+              width: window.innerWidth,
+              height: window.innerHeight,
+            };
+
+            if (!pointInRect(eventPos, windowRect)) {
+              eventPos.x = clamp(
+                eventPos.x,
+                windowRect.x,
+                windowRect.x + windowRect.width
+              );
+              eventPos.y = clamp(
+                eventPos.y,
+                windowRect.y,
+                windowRect.y + windowRect.height
+              );
+            }
+          }
+
+          throttledOnDragMove({
+            x: eventPos.x - dragOffset.x,
+            y: eventPos.y - dragOffset.y,
+          });
         }
       }
     },
-    [dragOffset, throttledOnDragMove]
+    [dragOffset, throttledOnDragMove, restrictToWindow]
   );
 
   useWindowEvent(

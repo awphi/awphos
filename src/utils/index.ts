@@ -93,3 +93,7 @@ export function pointInRect(point: Position, rect: Rect): boolean {
     point.y <= rect.y + rect.height
   );
 }
+
+export function clamp(val: number, min: number, max: number): number {
+  return Math.max(min, Math.min(val, max));
+}

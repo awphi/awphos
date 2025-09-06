@@ -18,7 +18,7 @@ export interface WindowProps extends PropsWithChildren {
 }
 
 // TODO re-add resizing - CSS resize property was a bit dodgy: weird animations, doesn't support bounding, broken w/ iframes in chrome
-function WindowContent() {
+function Window() {
   const {
     application: {
       props: { maximized, topLeft, size, minimized },
@@ -61,6 +61,7 @@ function WindowContent() {
     elementRef: windowRef,
     handleRef: dragHandleRef,
     disabled: !draggable || maximized,
+    restrictToWindow: true,
     onDragMove,
     onDragEnd,
   });
@@ -142,12 +143,12 @@ function WindowContent() {
   );
 }
 
-export default function Window(props: WindowProps) {
+export default function WindowWrapper(props: WindowProps) {
   const { applicationId } = props.application;
 
   return (
     <WindowContext.Provider value={applicationId}>
-      <WindowContent></WindowContent>
+      <Window />
     </WindowContext.Provider>
   );
 }

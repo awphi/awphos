@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import applicationsRegistry from "@/applications";
-import type { Size, Position } from "@/utils/positions";
+import type { CSSSize, Position } from "@/utils/positions";
 import { assignSafe, removeFromArray } from "@/utils";
 import { shallowEqual } from "react-redux";
 
@@ -9,7 +9,7 @@ import { shallowEqual } from "react-redux";
  */
 export interface ApplicationProps {
   title: string;
-  size: Size;
+  size: CSSSize;
   topLeft: Position;
   maximized: boolean;
   minimized: boolean;

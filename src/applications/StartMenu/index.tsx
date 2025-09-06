@@ -18,7 +18,7 @@ export default function StartMenu() {
   }, [isFocused]);
 
   return (
-    <div className="bg-neutral-900/70 p-4 backdrop-blur-lg h-full mt-auto flex flex-col gap-1">
+    <div className="bg-neutral-900/70 backdrop-blur-lg h-full mt-auto flex flex-col gap-1">
       {minimized ? null : <StartMenuApplicationList></StartMenuApplicationList>}
     </div>
   );

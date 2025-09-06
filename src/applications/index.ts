@@ -1,5 +1,5 @@
 import DummyApp from "@/applications/DummyApp";
-import type { Position, Size } from "@/utils/positions";
+import type { Position, CSSSize } from "@/utils/positions";
 import { SiWikipedia } from "@icons-pack/react-simple-icons";
 import { AppWindowIcon, GamepadIcon, SettingsIcon } from "lucide-react";
 import { type ComponentProps, type CSSProperties, type FC } from "react";
@@ -23,7 +23,7 @@ export interface ApplicationDefinition {
    * Default window size.
    * @defaultValue (500, 300)
    */
-  defaultSize?: Size;
+  defaultSize?: CSSSize;
   /**
    * Default window position.
    * @defaultValue (100, 100)
@@ -52,7 +52,7 @@ export interface ApplicationDefinition {
   /**
    * @defaultValue (250, 100)
    */
-  minSize?: Size;
+  minSize?: CSSSize;
   /**
    * @default ""
    */

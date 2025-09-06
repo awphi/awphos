@@ -1,5 +1,6 @@
 import clsx, { type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { Position, Rect } from "./positions";
 
 export function removeFromArray<T>(arr: T[], item: T): boolean {
   const idx = arr.indexOf(item);
@@ -82,4 +83,13 @@ export function oncePerFrame<T extends unknown[]>(
       isWaiting = false;
     });
   };
+}
+
+export function pointInRect(point: Position, rect: Rect): boolean {
+  return (
+    point.x >= rect.x &&
+    point.x <= rect.x + rect.width &&
+    point.y >= rect.y &&
+    point.y <= rect.y + rect.height
+  );
 }

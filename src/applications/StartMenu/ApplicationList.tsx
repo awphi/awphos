@@ -1,5 +1,5 @@
 import applicationsRegistry from "..";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { openApplication } from "@/store/applications";
 import useAppDispatch from "@/hooks/useAppDispatch";
 import { useDebouncedState } from "@/hooks/useDebouncedState";
@@ -48,7 +48,7 @@ export function StartMenuApplicationList() {
   );
 
   return (
-    <div className="flex flex-col gap-1 select-none">
+    <div className="flex flex-col gap-1 p-4 select-none">
       <Input
         className="mb-2"
         value={search}

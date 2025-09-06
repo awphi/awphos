@@ -1,12 +1,5 @@
 import type { Application } from "@/store/applications";
-import {
-  type MouseEvent,
-  type PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import { type PropsWithChildren, useCallback, useMemo, useRef } from "react";
 import WindowTitleBar from "./TitleBar";
 import {
   WINDOW_CONTENT_CLASSNAME,
@@ -18,6 +11,7 @@ import { motion, type HTMLMotionProps } from "motion/react";
 import { cn } from "@/utils";
 import { useDraggable } from "@/hooks/useDraggable";
 import { TASK_BAR_HEIGHT } from "../TaskBar/constants";
+import type { Position } from "@/utils/positions";
 
 export interface WindowProps extends PropsWithChildren {
   application: Application;
@@ -48,23 +42,27 @@ function WindowContent() {
   const dragHandleRef = useRef<HTMLDivElement | null>(null);
   const windowRef = useRef<HTMLDivElement | null>(null);
 
+  const onDragEnd = useCallback(() => {
+    const maxY = window.innerHeight - TASK_BAR_HEIGHT - WINDOW_TITLE_BAR_HEIGHT;
+    if (topLeft.y >= maxY) {
+      setProps({ topLeft: { x: topLeft.x, y: maxY } });
+      // window can lose focus here for some reason so quick hack to fix that:
+      requestAnimationFrame(() => focus());
+    }
+  }, [topLeft, focus]);
+
+  const onDragMove = useCallback((topLeft: Position) => {
+    setProps({
+      topLeft,
+    });
+  }, []);
+
   const { dragging } = useDraggable({
     elementRef: windowRef,
     handleRef: dragHandleRef,
     disabled: !draggable || maximized,
-    onDragMove: (position) =>
-      setProps({
-        topLeft: position,
-      }),
-    onDragEnd: () => {
-      const maxY =
-        window.innerHeight - TASK_BAR_HEIGHT - WINDOW_TITLE_BAR_HEIGHT;
-      if (topLeft.y >= maxY) {
-        setProps({ topLeft: { x: topLeft.x, y: maxY } });
-        // window can lose focus here for some reason so quick hack to fix that:
-        requestAnimationFrame(() => focus());
-      }
-    },
+    onDragMove,
+    onDragEnd,
   });
 
   const renderedPosition = useMemo(() => {

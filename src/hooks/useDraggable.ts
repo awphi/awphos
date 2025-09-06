@@ -1,6 +1,7 @@
 import type { Position } from "@/utils/positions";
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { oncePerFrame } from "@/utils";
+import { useWindowEvent } from "./useWindowEvent";
 
 export interface UseDraggableArgs {
   handleRef?: RefObject<HTMLElement | null>;
@@ -8,85 +9,76 @@ export interface UseDraggableArgs {
   disabled?: boolean;
   onDragMove?: (position: Position) => void;
   onDragEnd?: () => void;
+  restrictToWindow?: boolean;
 }
 
 export function useDraggable({
   handleRef,
   elementRef,
   disabled,
-  onDragMove: _onDragMove,
-  onDragEnd: _onDragEnd,
+  onDragMove,
+  onDragEnd,
 }: UseDraggableArgs) {
-  const [dragging, setDragging] = useState(false);
-  const onDragMove = useRef<(position: Position) => void>(null);
-  const onDragEnd = useRef<() => void>(null);
+  const [dragOffset, setDragOffset] = useState<Position | null>(null);
+  const [dragged, setDragged] = useState(false);
+  const throttledOnDragMove = useMemo(
+    () => (onDragMove ? oncePerFrame(onDragMove) : undefined),
+    [onDragMove]
+  );
 
-  onDragMove.current = _onDragMove ?? null;
-  onDragEnd.current = _onDragEnd ?? null;
+  useWindowEvent(
+    "pointermove",
+    (event: PointerEvent) => {
+      if (dragOffset) {
+        setDragged(true);
+        if (throttledOnDragMove) {
+          const pos: Position = {
+            x: event.clientX - dragOffset.x,
+            y: event.clientY - dragOffset.y,
+          };
+
+          // TODO don't call handler if drag is outside the viewport
+          // TODO (bonus) keep last position so we can find the exact event that went outside the viewport and clamp
+          throttledOnDragMove(pos);
+        }
+      }
+    },
+    [dragOffset, throttledOnDragMove]
+  );
+
+  useWindowEvent(
+    "pointerup",
+    () => {
+      if (dragged) {
+        onDragEnd?.();
+      }
+      setDragOffset(null);
+      setDragged(false);
+    },
+    [dragged, onDragEnd]
+  );
 
   useEffect(() => {
-    if (disabled) {
-      return;
-    }
-
-    console.log("registering drag handlers");
-
     const el = elementRef.current;
     const handle = handleRef ? handleRef.current : el;
-    const throttledOnDragMove = onDragMove.current
-      ? oncePerFrame(onDragMove.current)
-      : null;
 
-    if (handle && el) {
-      let dragOffset: Position | null = null; // represents if a drag has started
-      let dragged = false; // represents if a drag move has actually happened
-
+    if (handle && el && !disabled) {
       const startDrag = (event: PointerEvent) => {
         const rect = el.getBoundingClientRect();
-        // grab the bounds at the start of the drag
-        dragOffset = {
+        setDragOffset({
           x: event.clientX - rect.left,
           y: event.clientY - rect.top,
-        };
-        dragged = false;
-        setDragging(true);
-      };
-
-      const endDrag = () => {
-        if (dragged) {
-          onDragEnd.current?.();
-        }
-        dragOffset = null;
-        dragged = false;
-        setDragging(false);
-      };
-
-      const moveDrag = (event: PointerEvent) => {
-        if (dragOffset) {
-          dragged = true;
-          if (throttledOnDragMove) {
-            const pos: Position = {
-              x: event.clientX - dragOffset.x,
-              y: event.clientY - dragOffset.y,
-            };
-            // TODO don't call handler if drag is outside the viewport
-            // TODO (bonus) keep last position so we can find the exact event that went outside the viewport and clamp
-            throttledOnDragMove(pos);
-          }
-        }
+        });
+        setDragged(false);
       };
 
       handle.addEventListener("pointerdown", startDrag);
-      window.addEventListener("pointerup", endDrag);
-      window.addEventListener("pointermove", moveDrag);
 
       return () => {
         handle.removeEventListener("pointerdown", startDrag);
-        window.removeEventListener("pointerup", endDrag);
-        window.removeEventListener("pointermove", moveDrag);
       };
     }
-  }, [disabled, onDragMove, onDragEnd]);
+  }, [disabled]);
 
-  return { dragging };
+  return { dragging: dragOffset !== null };
 }

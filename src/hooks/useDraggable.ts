@@ -20,6 +20,10 @@ export interface UseDraggableArgs {
   restrictToWindow?: boolean; // TODO could be more generic and support arbitrary rects via element ref
 }
 
+// prevent all pointer events on anything not explicitly set with pointer-events: auto while dragging
+// this prevents focus loss when a drag ends outside a window
+const DRAG_CLASS = "[&_*]:pointer-events-none";
+
 export function useDraggable({
   handleRef,
   elementRef,
@@ -89,6 +93,7 @@ export function useDraggable({
       }
       setDragOffset(null);
       setDragged(false);
+      window.document.body.classList.remove(DRAG_CLASS);
     },
     [dragged, onDragEnd]
   );
@@ -110,6 +115,7 @@ export function useDraggable({
         setDragOffset(dragOffset);
         onDragStart?.(getDragPosition(event, dragOffset));
         setDragged(false);
+        window.document.body.classList.add(DRAG_CLASS);
       };
 
       handle.addEventListener("dragstart", preventDefaultDrag);

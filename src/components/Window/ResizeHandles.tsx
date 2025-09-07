@@ -1,13 +1,7 @@
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 import { WINDOW_DRAG_HANDLE_SIZE } from "./constants";
-import {
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
-import { isNumericSize, stringToColor } from "@/utils";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { cn, isNumericSize } from "@/utils";
 import { useDraggable } from "@/hooks/useDraggable";
 import type { CSSSize, Position } from "@/utils/positions";
 
@@ -52,16 +46,16 @@ function WindowResizeHandle({
     dragStart: Position;
   } | null>(null);
 
-  const cursor = useMemo<NonNullable<CSSProperties["cursor"]>>(() => {
+  const cursorClass = useMemo(() => {
     if (variant === "corner") {
       if (x === "left") {
-        return y === "top" ? "nw-resize" : "sw-resize";
+        return y === "top" ? "cursor-nw-resize" : "cursor-sw-resize";
       } else {
-        return y === "top" ? "ne-resize" : "se-resize";
+        return y === "top" ? "cursor-ne-resize" : "cursor-se-resize";
       }
     }
 
-    return variant === "vertical" ? "ew-resize" : "ns-resize";
+    return variant === "vertical" ? "cursor-ew-resize" : "cursor-ns-resize";
   }, [variant, x, y]);
 
   const onDragStart = useCallback(
@@ -72,19 +66,23 @@ function WindowResizeHandle({
         topLeft,
       });
       onResizeStateChange?.(true);
-      // TODO make cursor style sticky while dragging - need to set it all on elements, can be done with child selectors and some classes
+      // only need to apply cursor class to body as everything else doesn't receive pointer events during drag
+      window.document.body.classList.add(cursorClass);
     },
-    [topLeft, size, onResizeStateChange]
+    [topLeft, size, cursorClass, onResizeStateChange]
   );
 
   const onDragMove = useCallback(
     (position: Position) => {
+      if (initial === null) {
+        return;
+      }
+
       // TODO support non-numeric sizes with calc()?
-      if (
-        initial === null ||
-        !isNumericSize(initial.size) ||
-        !isNumericSize(minSize)
-      ) {
+      if (!isNumericSize(initial.size) || !isNumericSize(minSize)) {
+        console.warn(
+          "drag-to-resize is not supported on windows sized with non-numeric units (rem, vh, %, etc.)"
+        );
         return;
       }
 
@@ -99,25 +97,26 @@ function WindowResizeHandle({
         dx = -dx;
       }
 
-      const newWidth = initial.size.width + dx;
-      const newHeight = initial.size.height + dy;
+      const clampedWidth = Math.max(minSize.width, initial.size.width + dx);
+      const clampedHeight = Math.max(minSize.height, initial.size.height + dy);
+      const appliedDx = clampedWidth - initial.size.width;
+      const appliedDy = clampedHeight - initial.size.height;
 
-      setProps({
+      const update: any = {
         size: {
-          width: newWidth,
-          height: newHeight,
+          width: clampedWidth,
+          height: clampedHeight,
         },
-      });
+      };
 
       if (y === "top" || x === "left") {
-        // TODO clamp this so once a minimum dimension is reached we don't move this window along that axis any further
-        setProps({
-          topLeft: {
-            x: initial.topLeft.x - dx,
-            y: initial.topLeft.y - dy,
-          },
-        });
+        update.topLeft = {
+          x: x === "left" ? initial.topLeft.x - appliedDx : initial.topLeft.x,
+          y: y === "top" ? initial.topLeft.y - appliedDy : initial.topLeft.y,
+        };
       }
+
+      setProps(update);
     },
     [initial, variant, minSize]
   );
@@ -125,7 +124,8 @@ function WindowResizeHandle({
   const onDragEnd = useCallback(() => {
     onResizeStateChange?.(false);
     setInitial(null);
-  }, [onResizeStateChange, cursor]);
+    window.document.body.classList.remove(cursorClass); // asumes cursor hasn't changed between drag start and end
+  }, [onResizeStateChange, cursorClass]);
 
   useDraggable({
     handleRef: ref,
@@ -139,16 +139,13 @@ function WindowResizeHandle({
     <div
       ref={ref}
       onPointerDown={(e) => e.preventDefault()}
+      className={cn("pointer-events-auto absolute", cursorClass)}
       style={{
-        cursor,
-        pointerEvents: "all",
-        position: "absolute",
         width: variant === "horizontal" ? "100%" : WINDOW_DRAG_HANDLE_SIZE,
         height: variant === "vertical" ? "100%" : WINDOW_DRAG_HANDLE_SIZE,
         ...(x ? { [x]: -WINDOW_DRAG_HANDLE_SIZE } : undefined),
         ...(y ? { [y]: -WINDOW_DRAG_HANDLE_SIZE } : undefined),
         //backgroundColor: stringToColor(variant),
-        zIndex: 10,
       }}
     ></div>
   );

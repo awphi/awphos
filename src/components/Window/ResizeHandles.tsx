@@ -129,7 +129,7 @@ function WindowResizeHandle({
         window.document.body.classList.remove(className);
       }
     });
-  }, [onResizeStateChange, cursorClass]);
+  }, [onResizeStateChange]);
 
   useDraggable({
     handleRef: ref,

@@ -26,7 +26,10 @@ export interface WindowTitleBarProps {
 
 export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
   const {
-    application: { props, definitionId },
+    application: {
+      props: { title, maximized },
+      definitionId,
+    },
     setProps,
     close,
     isFocused,
@@ -38,7 +41,8 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
     <div
       className={cn(
         "flex items-center select-none justify-between",
-        isFocused ? "bg-neutral-800" : "bg-neutral-700"
+        isFocused ? "bg-neutral-800" : "bg-neutral-700",
+        { "rounded-t-md": !maximized }
       )}
       style={{
         height: WINDOW_TITLE_BAR_HEIGHT,
@@ -51,7 +55,7 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
       >
         <Icon className="min-w-fit" width={16} height={16} />
         <p className="overflow-ellipsis whitespace-nowrap overflow-hidden">
-          {props.title}
+          {title}
         </p>
       </div>
       <div className="h-full flex">
@@ -64,13 +68,9 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
           <Minus width={18} />
         </WindowTitleBarButton>
         <WindowTitleBarButton
-          onClick={() => setProps({ maximized: !props.maximized })}
+          onClick={() => setProps({ maximized: !maximized })}
         >
-          {props.maximized ? (
-            <Minimize2 width={16} />
-          ) : (
-            <Maximize2 width={16} />
-          )}
+          {maximized ? <Minimize2 width={16} /> : <Maximize2 width={16} />}
         </WindowTitleBarButton>
         <WindowTitleBarButton className="hover:bg-red-500/75" onClick={close}>
           <X width={18} />

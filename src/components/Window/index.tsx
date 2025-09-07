@@ -134,7 +134,7 @@ function Window() {
       ref={windowRef}
       transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
       className={cn(
-        "shadow-md flex flex-col absolute overflow-visible",
+        "shadow-md flex flex-col absolute overflow-visible ",
         className
       )}
       style={style}
@@ -156,6 +156,7 @@ function Window() {
           WINDOW_CONTENT_CLASSNAME,
           {
             "pointer-events-none": dragging || resizing,
+            "rounded-b-md": !maximized,
           }
         )}
         data-role="window-content"

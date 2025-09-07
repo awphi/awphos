@@ -99,7 +99,7 @@ export default function TwentyFortyEight() {
   );
 
   return (
-    <div className="bg-neutral-100 text-neutral-500 h-full min-h-fit flex items-center justify-center relative ">
+    <div className="bg-neutral-100 text-neutral-500 h-full min-h-fit flex items-center justify-center relative">
       <TwentyFortyEightBoard board={board}></TwentyFortyEightBoard>
       <Popover defaultOpen>
         <PopoverTrigger className="absolute bottom-2 left-2 flex gap-2 p-1 rounded-md hover:bg-neutral-200">

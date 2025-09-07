@@ -150,9 +150,14 @@ function Window() {
       ) : null}
       {showTitleBar ? <WindowTitleBar dragHandle={dragHandleRef} /> : null}
       <div
-        className={cn("flex-auto", "overflow-auto", WINDOW_CONTENT_CLASSNAME, {
-          "pointer-events-none": dragging || resizing,
-        })}
+        className={cn(
+          "flex-auto",
+          "overflow-hidden",
+          WINDOW_CONTENT_CLASSNAME,
+          {
+            "pointer-events-none": dragging || resizing,
+          }
+        )}
         data-role="window-content"
         data-application-id={applicationId}
       >

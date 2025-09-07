@@ -17,6 +17,7 @@ export interface UseDraggableArgs {
   onDragMove?: (position: Position) => void;
   onDragEnd?: () => void;
   onDragStart?: (position: Position) => void;
+  buttons?: number;
   restrictToWindow?: boolean; // TODO could be more generic and support arbitrary rects via element ref
 }
 
@@ -32,6 +33,7 @@ export function useDraggable({
   onDragEnd,
   onDragStart,
   restrictToWindow,
+  buttons = 1,
 }: UseDraggableArgs) {
   const [dragOffset, setDragOffset] = useState<Position | null>(null);
   const [dragged, setDragged] = useState(false);
@@ -106,6 +108,9 @@ export function useDraggable({
       const preventDefaultDrag = (e: DragEvent) => e.preventDefault();
 
       const startDrag = (event: PointerEvent) => {
+        if (!(event.buttons & buttons)) {
+          return;
+        }
         const rect = el?.getBoundingClientRect() ?? { left: 0, top: 0 };
         const dragOffset: Position = {
           x: event.clientX - rect.left,
@@ -126,7 +131,7 @@ export function useDraggable({
         handle.removeEventListener("pointerdown", startDrag);
       };
     }
-  }, [disabled, onDragStart]);
+  }, [disabled, onDragStart, buttons]);
 
   return { dragging: dragOffset !== null };
 }

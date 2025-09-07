@@ -47,10 +47,12 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
     >
       <div
         ref={dragHandle}
-        className="pl-2 flex-1 h-full flex gap-2 items-center"
+        className="pl-2 flex-1 h-full flex gap-2 items-center overflow-hidden"
       >
-        <Icon width={16} height={16} />
-        <p>{props.title}</p>
+        <Icon className="min-w-fit" width={16} height={16} />
+        <p className="overflow-ellipsis whitespace-nowrap overflow-hidden">
+          {props.title}
+        </p>
       </div>
       <div className="h-full flex">
         <WindowTitleBarButton

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "awphos",
+  title: "Adam Hodson | adamw.ph",
   description: "Simple web-based graphical OS emulator",
 };
 

@@ -98,6 +98,7 @@ export interface ApplicationsRegistry {
   definitions: Record<string, Required<ApplicationDefinition>>;
 }
 
+// TODO may need moving into redux state to support "installation" of custom applications at runtime
 const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
   definitions: applyDefaults<ApplicationDefinition>(
     {

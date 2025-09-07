@@ -6,4 +6,4 @@ export const WindowContext = createContext<string>("");
 
 export const WINDOW_TITLE_BAR_HEIGHT = 32;
 
-export const WINDOW_DRAG_HANDLE_SIZE = 4;
+export const WINDOW_DRAG_HANDLE_SIZE = 6;

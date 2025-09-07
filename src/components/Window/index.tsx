@@ -1,5 +1,11 @@
 import type { Application } from "@/store/applications";
-import { type PropsWithChildren, useCallback, useMemo, useRef } from "react";
+import {
+  type PropsWithChildren,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import WindowTitleBar from "./TitleBar";
 import {
   WINDOW_CONTENT_CLASSNAME,
@@ -43,6 +49,8 @@ function Window() {
   } = useCurrentApplication();
   const dragHandleRef = useRef<HTMLDivElement | null>(null);
   const windowRef = useRef<HTMLDivElement | null>(null);
+
+  const [resizing, setResizing] = useState(false);
 
   const onDragEnd = useCallback(() => {
     const maxY = window.innerHeight - TASK_BAR_HEIGHT - WINDOW_TITLE_BAR_HEIGHT;
@@ -90,9 +98,9 @@ function Window() {
       initial: initialAndExit,
       animate: {
         ...Object.fromEntries(animatedProps.map((v) => [v, progress])),
-        ...renderedSize,
+        ...(resizing ? undefined : renderedSize),
         // only animate position when not dragging
-        ...(dragging ? undefined : renderedPosition),
+        ...(dragging || resizing ? undefined : renderedPosition),
       },
     };
   }, [
@@ -101,6 +109,7 @@ function Window() {
     dragging,
     minimized,
     state,
+    resizing,
     animatedProps,
   ]);
 
@@ -115,6 +124,7 @@ function Window() {
     };
   }, [renderedPosition, renderedSize, styleProp, resizable, minSize, zIndex]);
 
+  // TODO prevent text selection inside window while resizing without discarding selection (might not be possible)
   return (
     <motion.div
       onClick={(e) => e.stopPropagation()}
@@ -133,7 +143,9 @@ function Window() {
       }}
       {...animationProps}
     >
-      {resizable ? <WindowResizeHandles /> : null}
+      {resizable ? (
+        <WindowResizeHandles onResizeStateChange={setResizing} />
+      ) : null}
       {showTitleBar ? <WindowTitleBar dragHandle={dragHandleRef} /> : null}
       <div
         className={cn("flex-auto", "overflow-auto", WINDOW_CONTENT_CLASSNAME, {

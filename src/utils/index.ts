@@ -1,6 +1,6 @@
 import clsx, { type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { Position, Rect } from "./positions";
+import type { CSSSize, Position, Rect, Size } from "./positions";
 
 export function removeFromArray<T>(arr: T[], item: T): boolean {
   const idx = arr.indexOf(item);
@@ -106,4 +106,8 @@ export function stringToColor(str: string): string {
   // Generate color
   const c = (hash & 0x00ffffff).toString(16).toUpperCase();
   return "#" + "00000".substring(0, 6 - c.length) + c;
+}
+
+export function isNumericSize(size: CSSSize): size is Size {
+  return typeof size.width === "number" && typeof size.height === "number";
 }

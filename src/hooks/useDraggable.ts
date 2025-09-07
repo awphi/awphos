@@ -1,5 +1,12 @@
 import type { Position, Rect } from "@/utils/positions";
-import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import { clamp, oncePerFrame, pointInRect } from "@/utils";
 import { useWindowEvent } from "./useWindowEvent";
 
@@ -9,6 +16,7 @@ export interface UseDraggableArgs {
   disabled?: boolean;
   onDragMove?: (position: Position) => void;
   onDragEnd?: () => void;
+  onDragStart?: (position: Position) => void;
   restrictToWindow?: boolean; // TODO could be more generic and support arbitrary rects via element ref
 }
 
@@ -18,6 +26,7 @@ export function useDraggable({
   disabled,
   onDragMove,
   onDragEnd,
+  onDragStart,
   restrictToWindow,
 }: UseDraggableArgs) {
   const [dragOffset, setDragOffset] = useState<Position | null>(null);
@@ -27,44 +36,49 @@ export function useDraggable({
     [onDragMove]
   );
 
+  const getDragPosition = useCallback(
+    (event: PointerEvent, offset: Position) => {
+      const eventPos: Position = { x: event.clientX, y: event.clientY };
+
+      if (restrictToWindow) {
+        const windowRect: Rect = {
+          x: 0,
+          y: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+
+        if (!pointInRect(eventPos, windowRect)) {
+          eventPos.x = clamp(
+            eventPos.x,
+            windowRect.x,
+            windowRect.x + windowRect.width
+          );
+          eventPos.y = clamp(
+            eventPos.y,
+            windowRect.y,
+            windowRect.y + windowRect.height
+          );
+        }
+      }
+
+      return {
+        x: eventPos.x - offset.x,
+        y: eventPos.y - offset.y,
+      };
+    },
+    [dragOffset]
+  );
+
   useWindowEvent(
     "pointermove",
     (event: PointerEvent) => {
       if (dragOffset) {
         setDragged(true);
-        if (throttledOnDragMove) {
-          const eventPos: Position = { x: event.clientX, y: event.clientY };
-
-          if (restrictToWindow) {
-            const windowRect: Rect = {
-              x: 0,
-              y: 0,
-              width: window.innerWidth,
-              height: window.innerHeight,
-            };
-
-            if (!pointInRect(eventPos, windowRect)) {
-              eventPos.x = clamp(
-                eventPos.x,
-                windowRect.x,
-                windowRect.x + windowRect.width
-              );
-              eventPos.y = clamp(
-                eventPos.y,
-                windowRect.y,
-                windowRect.y + windowRect.height
-              );
-            }
-          }
-
-          throttledOnDragMove({
-            x: eventPos.x - dragOffset.x,
-            y: eventPos.y - dragOffset.y,
-          });
-        }
+        throttledOnDragMove?.(getDragPosition(event, dragOffset));
       }
     },
-    [dragOffset, throttledOnDragMove, restrictToWindow]
+    [dragOffset, throttledOnDragMove, getDragPosition]
   );
 
   useWindowEvent(
@@ -84,22 +98,29 @@ export function useDraggable({
     const handle = handleRef ? handleRef.current : el;
 
     if (handle && !disabled) {
+      const preventDefaultDrag = (e: DragEvent) => e.preventDefault();
+
       const startDrag = (event: PointerEvent) => {
         const rect = el?.getBoundingClientRect() ?? { left: 0, top: 0 };
-        setDragOffset({
+        const dragOffset: Position = {
           x: event.clientX - rect.left,
           y: event.clientY - rect.top,
-        });
+        };
+
+        setDragOffset(dragOffset);
+        onDragStart?.(getDragPosition(event, dragOffset));
         setDragged(false);
       };
 
+      handle.addEventListener("dragstart", preventDefaultDrag);
       handle.addEventListener("pointerdown", startDrag);
 
       return () => {
+        handle.removeEventListener("dragstart", preventDefaultDrag);
         handle.removeEventListener("pointerdown", startDrag);
       };
     }
-  }, [disabled]);
+  }, [disabled, onDragStart]);
 
   return { dragging: dragOffset !== null };
 }

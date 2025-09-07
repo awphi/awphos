@@ -124,7 +124,11 @@ function WindowResizeHandle({
   const onDragEnd = useCallback(() => {
     onResizeStateChange?.(false);
     setInitial(null);
-    window.document.body.classList.remove(cursorClass); // asumes cursor hasn't changed between drag start and end
+    window.document.body.classList.forEach((className) => {
+      if (className.startsWith("cursor-")) {
+        window.document.body.classList.remove(className);
+      }
+    });
   }, [onResizeStateChange, cursorClass]);
 
   useDraggable({

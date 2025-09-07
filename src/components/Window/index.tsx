@@ -31,6 +31,7 @@ function Window() {
     application: {
       props: { maximized, topLeft, size, minimized },
       state,
+      applicationId,
     },
     definition: {
       component: Component,
@@ -124,9 +125,10 @@ function Window() {
     };
   }, [renderedPosition, renderedSize, styleProp, resizable, minSize, zIndex]);
 
-  // TODO prevent text selection inside window while resizing without discarding selection (might not be possible)
   return (
     <motion.div
+      data-role="window"
+      data-application-id={applicationId}
       onClick={(e) => e.stopPropagation()}
       onPointerDown={() => focus()}
       ref={windowRef}
@@ -151,6 +153,8 @@ function Window() {
         className={cn("flex-auto", "overflow-auto", WINDOW_CONTENT_CLASSNAME, {
           "pointer-events-none": dragging || resizing,
         })}
+        data-role="window-content"
+        data-application-id={applicationId}
       >
         <Component />
       </div>

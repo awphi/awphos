@@ -9,6 +9,10 @@ import {
 import { motion, useDomEvent } from "motion/react";
 import { cn } from "@/utils";
 import { useWindowEvent } from "@/hooks/useWindowEvent";
+import { ArrowRight, ArrowRightIcon, HelpCircleIcon } from "lucide-react";
+import { Popover } from "@/components/Popover";
+import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { Kbd } from "@/components/Kbd";
 
 // indexed by (Math.log2(value) - 1) % colors.length
 const TILE_COLORS = [
@@ -38,7 +42,6 @@ function TwentyFortyEightTile({
       layoutId={id}
       initial={isNew ? { opacity: 0, scale: 0 } : false}
       animate={{ opacity: 1, scale: 1 }}
-      style={{ zIndex: value }}
       className={cn(
         "w-16 h-16 flex justify-center absolute items-center text-neutral-600 font-bold",
         value === 0
@@ -72,7 +75,7 @@ function TwentyFortyEightBoard({ board }: { board: TwentyFortyEightBoard }) {
 }
 
 export default function TwentyFortyEight() {
-  const { isFocused } = useCurrentApplication();
+  const { isFocused, isInsideWindowContent } = useCurrentApplication();
   const [board, setBoard] = useState(makeBoard(4));
 
   useWindowEvent(
@@ -95,10 +98,43 @@ export default function TwentyFortyEight() {
     [isFocused, board]
   );
 
-  // TODO some sort of help menu for the controls
   return (
-    <div className="bg-neutral-100 h-full min-h-fit flex items-center justify-center">
+    <div className="bg-neutral-100 text-neutral-500 h-full min-h-fit flex items-center justify-center relative ">
       <TwentyFortyEightBoard board={board}></TwentyFortyEightBoard>
+      <Popover defaultOpen>
+        <PopoverTrigger className="absolute bottom-2 left-2 flex gap-2 p-1 rounded-md hover:bg-neutral-200">
+          <HelpCircleIcon />
+        </PopoverTrigger>
+        <PopoverContent
+          avoidCollisions={false}
+          sideOffset={8}
+          onInteractOutside={(e) =>
+            !isInsideWindowContent(e.target) ? e.preventDefault() : undefined
+          }
+          side="top"
+          align="start"
+          className="py-1 px-2 border border-neutral-400 bg-neutral-100 rounded-md select-none flex gap-1 flex-col"
+        >
+          <h1 className="font-semibold ">Controls</h1>
+          <div className="grid grid-cols-[auto_auto] justify-items-start gap-y-1 gap-x-2 text-sm">
+            <span>Move tiles</span>
+            <div className="flex items-center gap-0.5">
+              <Kbd>↑</Kbd>
+              <Kbd>↓</Kbd>
+              <Kbd>←</Kbd>
+              <Kbd>→</Kbd>
+            </div>
+            <span>Restart</span>
+            <Kbd>R</Kbd>
+            <span>Board size</span>
+            <div className="flex items-center gap-0.5">
+              <Kbd>1</Kbd>
+              <ArrowRightIcon className="size-3" />
+              <Kbd>8</Kbd>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

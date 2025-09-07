@@ -59,6 +59,21 @@ export function useApplication(applicationId: string) {
     [focusQueue, applicationId]
   );
 
+  const isInsideWindowContent = useCallback(
+    (tgt: EventTarget | null) => {
+      if (tgt instanceof HTMLElement) {
+        return (
+          tgt.closest(
+            `[data-role="window-content"][data-application-id="${applicationId}"]`
+          ) !== null
+        );
+      }
+
+      return false;
+    },
+    [applicationId]
+  );
+
   return {
     application,
     definition,
@@ -68,5 +83,6 @@ export function useApplication(applicationId: string) {
     focus,
     isFocused,
     zIndex,
+    isInsideWindowContent,
   };
 }

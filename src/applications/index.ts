@@ -111,7 +111,7 @@ const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
         component: TwentyFortyEight,
         icon: GamepadIcon,
         defaultSize: {
-          width: 380,
+          width: 720,
           height: 380,
         },
         minSize: {

@@ -114,7 +114,7 @@ function WindowResizeHandle({
         setProps({
           topLeft: {
             x: initial.topLeft.x - dx,
-            y: initial.topLeft.x - dy,
+            y: initial.topLeft.y - dy,
           },
         });
       }
@@ -124,6 +124,7 @@ function WindowResizeHandle({
 
   const onDragEnd = useCallback(() => {
     onResizeStateChange?.(false);
+    setInitial(null);
   }, [onResizeStateChange, cursor]);
 
   useDraggable({
@@ -137,6 +138,7 @@ function WindowResizeHandle({
   return (
     <div
       ref={ref}
+      onPointerDown={(e) => e.preventDefault()}
       style={{
         cursor,
         pointerEvents: "all",
@@ -145,7 +147,7 @@ function WindowResizeHandle({
         height: variant === "vertical" ? "100%" : WINDOW_DRAG_HANDLE_SIZE,
         ...(x ? { [x]: -WINDOW_DRAG_HANDLE_SIZE } : undefined),
         ...(y ? { [y]: -WINDOW_DRAG_HANDLE_SIZE } : undefined),
-        backgroundColor: stringToColor(variant),
+        //backgroundColor: stringToColor(variant),
         zIndex: 10,
       }}
     ></div>

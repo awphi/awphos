@@ -149,7 +149,7 @@ function Window() {
       {showTitleBar ? <WindowTitleBar dragHandle={dragHandleRef} /> : null}
       <div
         className={cn("flex-auto", "overflow-auto", WINDOW_CONTENT_CLASSNAME, {
-          "pointer-events-none": dragging,
+          "pointer-events-none": dragging || resizing,
         })}
       >
         <Component />

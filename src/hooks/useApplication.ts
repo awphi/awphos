@@ -31,17 +31,17 @@ export function useApplication(applicationId: string) {
         })
       );
     },
-    [applicationId]
+    [applicationId, dispatch]
   );
 
   const close = useCallback(
     () => dispatch(startCloseApplication(applicationId)),
-    [applicationId]
+    [applicationId, dispatch]
   );
 
   const forceClose = useCallback(
     () => dispatch(finalizeCloseApplication(applicationId)),
-    [applicationId]
+    [applicationId, dispatch]
   );
 
   const focus = useCallback(

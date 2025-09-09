@@ -6,9 +6,8 @@ import { openApplication, setApplicationProps } from "@/store/applications";
 import { useFocus } from "@/hooks/useFocus";
 import { cn } from "@/utils";
 
-import { ContextMenuTrigger } from "@radix-ui/react-context-menu";
 import { Popover, PopoverAnchor, PopoverContent } from "../Popover";
-import { PopoverPortal, PopoverTrigger } from "@radix-ui/react-popover";
+import { PopoverPortal } from "@radix-ui/react-popover";
 
 export interface TaskBarApplicationIconProps {
   definitionId: string;
@@ -52,7 +51,7 @@ export default function TaskBarApplicationIcon({
       // prevent click being captured by parent which will focus(null)
       e.stopPropagation();
     },
-    [definitionId, applicationIds, isSomeInstanceFocused]
+    [definitionId, applicationIds, isSomeInstanceFocused, dispatch, focus]
   );
 
   return (

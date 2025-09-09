@@ -9,7 +9,6 @@ import {
 import WindowTitleBar from "./TitleBar";
 import {
   WINDOW_CONTENT_CLASSNAME,
-  WINDOW_DRAG_HANDLE_SIZE,
   WINDOW_TITLE_BAR_HEIGHT,
   WindowContext,
 } from "./constants";
@@ -60,13 +59,16 @@ function Window() {
       // window can lose focus here for some reason so quick hack to fix that:
       requestAnimationFrame(() => focus());
     }
-  }, [topLeft, focus]);
+  }, [topLeft, focus, setProps]);
 
-  const onDragMove = useCallback((topLeft: Position) => {
-    setProps({
-      topLeft,
-    });
-  }, []);
+  const onDragMove = useCallback(
+    (topLeft: Position) => {
+      setProps({
+        topLeft,
+      });
+    },
+    [setProps]
+  );
 
   const { dragging } = useDraggable({
     elementRef: windowRef,
@@ -123,7 +125,7 @@ function Window() {
       minHeight: minSize.height,
       zIndex,
     };
-  }, [renderedPosition, renderedSize, styleProp, resizable, minSize, zIndex]);
+  }, [renderedPosition, renderedSize, styleProp, minSize, zIndex]);
 
   return (
     <motion.div

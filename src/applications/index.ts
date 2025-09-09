@@ -2,7 +2,7 @@ import DummyApp from "@/applications/DummyApp";
 import type { Position, CSSSize } from "@/utils/positions";
 import { SiWikipedia } from "@icons-pack/react-simple-icons";
 import { AppWindowIcon, GamepadIcon, SettingsIcon } from "lucide-react";
-import { type ComponentProps, type CSSProperties, type FC } from "react";
+import { type ComponentProps, type FC } from "react";
 import Wikipedia from "./Wikipedia";
 import StartMenu from "./StartMenu";
 import TwentyFortyEight from "./TwentyFortyEight";

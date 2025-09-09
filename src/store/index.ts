@@ -19,3 +19,10 @@ store.dispatch(
     props: { minimized: true },
   })
 );
+
+store.dispatch(
+  openApplication({
+    definitionId: "welcome",
+    applicationId: "welcome-intro", // consistent ID so SSR matches CSR
+  })
+);

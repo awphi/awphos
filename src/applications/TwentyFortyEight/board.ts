@@ -13,7 +13,7 @@ export interface TwentyFortyEightBoard {
 export function makeBoard(size: number = 4): TwentyFortyEightBoard {
   const board: TwentyFortyEightBoard = {
     size,
-    grid: Array.from({ length: size * size }, (_) => []),
+    grid: Array.from({ length: size * size }, () => []),
   };
   addRandomTile(board, 2);
   return board;
@@ -76,9 +76,11 @@ function shiftRowLeft(row: TwentyFortyEightTile[][]): TwentyFortyEightTile[][] {
   return result;
 }
 
+export type Direction = "ArrowLeft" | "ArrowRight" | "ArrowUp" | "ArrowDown";
+
 export function shiftBoard(
   oldBoard: TwentyFortyEightBoard,
-  direction: "ArrowLeft" | "ArrowRight" | "ArrowUp" | "ArrowDown",
+  direction: Direction,
   newValue: number | null = Math.random() > 0.9 ? 4 : 2
 ): TwentyFortyEightBoard {
   const { size, grid: oldGrid } = oldBoard;

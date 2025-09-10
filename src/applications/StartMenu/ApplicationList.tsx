@@ -1,5 +1,5 @@
 import applicationsRegistry from "..";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { openApplication } from "@/store/applications";
 import useAppDispatch from "@/hooks/useAppDispatch";
 import { useDebouncedState } from "@/hooks/useDebouncedState";
@@ -41,10 +41,10 @@ export function StartMenuApplicationList() {
       Object.entries(applicationsRegistry.definitions)
         .sort((a, b) => a[1].name.localeCompare(b[1].name))
         .filter(([id]) => id !== "start-menu")
-        .filter(([_, definition]) =>
+        .filter(([, definition]) =>
           definition.name.toLowerCase().includes(debouncedSearch.toLowerCase())
         ),
-    [applicationsRegistry, debouncedSearch]
+    [debouncedSearch]
   );
 
   return (

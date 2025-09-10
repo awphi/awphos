@@ -1,8 +1,8 @@
-import DummyApp from "@/applications/DummyApp";
+import Welcome from "@/applications/Welcome";
 import type { Position, CSSSize } from "@/utils/positions";
 import { SiWikipedia } from "@icons-pack/react-simple-icons";
 import { AppWindowIcon, GamepadIcon, SettingsIcon } from "lucide-react";
-import { type ComponentProps, type CSSProperties, type FC } from "react";
+import { type ComponentProps, type FC } from "react";
 import Wikipedia from "./Wikipedia";
 import StartMenu from "./StartMenu";
 import TwentyFortyEight from "./TwentyFortyEight";
@@ -120,10 +120,14 @@ const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
           height: 380,
         },
       },
-      "dummy-app": {
-        name: "Dummy App",
-        component: DummyApp,
+      welcome: {
+        name: "Welcome",
+        component: Welcome,
         icon: AppWindowIcon,
+        defaultSize: {
+          height: 350,
+          width: 500,
+        },
       },
       "system-settings": {
         name: "System Settings",

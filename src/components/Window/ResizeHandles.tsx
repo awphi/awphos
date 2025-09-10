@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { cn, isNumericSize } from "@/utils";
 import { useDraggable } from "@/hooks/useDraggable";
 import type { CSSSize, Position } from "@/utils/positions";
+import type { ApplicationPropsUpdate } from "@/store/applications";
 
 interface WindowResizeHandleProps {
   variant: "vertical" | "horizontal" | "corner";
@@ -102,7 +103,7 @@ function WindowResizeHandle({
       const appliedDx = clampedWidth - initial.size.width;
       const appliedDy = clampedHeight - initial.size.height;
 
-      const update: any = {
+      const update: ApplicationPropsUpdate["props"] = {
         size: {
           width: clampedWidth,
           height: clampedHeight,
@@ -118,7 +119,7 @@ function WindowResizeHandle({
 
       setProps(update);
     },
-    [initial, variant, minSize]
+    [initial, variant, minSize, setProps, x, y]
   );
 
   const onDragEnd = useCallback(() => {

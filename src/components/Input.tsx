@@ -19,7 +19,7 @@ export default function Input({
     if (autoFocus) {
       inputRef.current?.focus();
     }
-  }, []);
+  }, [autoFocus]);
 
   return (
     <div

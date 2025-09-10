@@ -15,6 +15,9 @@ export interface ApplicationProps {
   minimized: boolean;
 }
 
+// TODO could be a more specific type?
+export type ApplicationArgs = Record<string, unknown>;
+
 /**
  * Instance of a running application
  */
@@ -23,8 +26,7 @@ export interface Application {
   applicationId: string;
   props: ApplicationProps;
   state: "open" | "closing";
-  // TODO could be a more specific type?
-  args: Record<string, any>;
+  args: ApplicationArgs;
 }
 
 /**
@@ -38,7 +40,7 @@ export interface ApplicationPropsUpdate {
 export interface ApplicationOpenArgs {
   definitionId: string;
   applicationId?: string;
-  args?: Record<string, any>;
+  args?: ApplicationArgs;
   props?: Partial<ApplicationProps>;
 }
 

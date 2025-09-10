@@ -29,7 +29,7 @@ export default function TaskBarStartMenuIcon() {
 
       e.stopPropagation();
     },
-    [props.minimized]
+    [props.minimized, dispatch, focus]
   );
 
   return (

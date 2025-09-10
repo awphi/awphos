@@ -19,9 +19,12 @@ export function useFocus() {
     [focusQueue]
   );
 
-  const focus = useCallback((applicationId: string | null) => {
-    dispatch(focusApplication(applicationId));
-  }, []);
+  const focus = useCallback(
+    (applicationId: string | null) => {
+      dispatch(focusApplication(applicationId));
+    },
+    [dispatch]
+  );
 
   return {
     focus,

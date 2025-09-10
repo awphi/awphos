@@ -15,7 +15,7 @@ export default function StartMenu() {
     if (!isFocused) {
       setProps({ minimized: true });
     }
-  }, [isFocused]);
+  }, [isFocused, setProps]);
 
   return (
     <div className="bg-neutral-900/70 backdrop-blur-lg h-full mt-auto flex flex-col gap-1">

@@ -23,20 +23,20 @@ type PickDefined<T> = {
 /**
  * Object.assign but without overwriting existing props with undefined values
  */
-export function assignSafe<T extends {}, S extends {}>(
+export function assignSafe<T extends object, S extends object>(
   target: T,
   source: S
 ): T & PickDefined<S> {
   for (const key in source) {
     const val = source[key];
     if (val !== undefined) {
-      (target as any)[key] = val;
+      (target as Record<string, unknown>)[key] = val;
     }
   }
   return target as T & PickDefined<S>;
 }
 
-export function applyDefaults<T extends {}>(
+export function applyDefaults<T extends object>(
   obj: Record<string, T>,
   defaultValue: Required<T>
 ): Record<string, Required<T>> {
@@ -48,7 +48,7 @@ export function applyDefaults<T extends {}>(
   return result;
 }
 
-export function deepFreeze<T extends {}>(
+export function deepFreeze<T extends object>(
   object: T,
   mode: "freeze" | "seal" = "freeze"
 ): T {

@@ -2,8 +2,7 @@ import { cn } from "@/utils";
 import { motion } from "motion/react";
 import type { ComponentProps } from "react";
 
-export interface TaskBarIconProps
-  extends ComponentProps<typeof motion.button> {}
+export type TaskBarIconProps = ComponentProps<typeof motion.button>;
 
 export default function TaskBarIcon(props: TaskBarIconProps) {
   return (

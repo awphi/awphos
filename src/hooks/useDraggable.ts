@@ -3,7 +3,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type RefObject,
 } from "react";
@@ -73,7 +72,7 @@ export function useDraggable({
         y: eventPos.y - offset.y,
       };
     },
-    [dragOffset]
+    [restrictToWindow]
   );
 
   useWindowEvent(
@@ -131,7 +130,7 @@ export function useDraggable({
         handle.removeEventListener("pointerdown", startDrag);
       };
     }
-  }, [disabled, onDragStart, buttons]);
+  }, [disabled, onDragStart, buttons, elementRef, handleRef, getDragPosition]);
 
   return { dragging: dragOffset !== null };
 }

@@ -1,15 +1,16 @@
 import useCurrentApplication from "@/hooks/useCurrentApplication";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   makeBoard,
   shiftBoard,
+  type Direction,
   type TwentyFortyEightBoard,
   type TwentyFortyEightTile,
 } from "./board";
-import { motion, useDomEvent } from "motion/react";
+import { motion } from "motion/react";
 import { cn } from "@/utils";
 import { useWindowEvent } from "@/hooks/useWindowEvent";
-import { ArrowRight, ArrowRightIcon, HelpCircleIcon } from "lucide-react";
+import { ArrowRightIcon, HelpCircleIcon } from "lucide-react";
 import { Popover } from "@/components/Popover";
 import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { Kbd } from "@/components/Kbd";
@@ -88,7 +89,7 @@ export default function TwentyFortyEight() {
       const maybeInt = Number.parseInt(e.key);
 
       if (e.key.startsWith("Arrow")) {
-        setBoard(shiftBoard(board, e.key as any));
+        setBoard(shiftBoard(board, e.key as Direction));
       } else if (e.key === "r") {
         setBoard(makeBoard(board.size));
       } else if (3 <= maybeInt && maybeInt <= 8) {

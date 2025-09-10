@@ -3,7 +3,6 @@ import { WINDOW_CONTENT_CLASSNAME, WINDOW_TITLE_BAR_HEIGHT } from "./constants";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 import type { ComponentProps, RefObject } from "react";
 import { cn } from "@/utils";
-import { getApplicationDefinition } from "@/applications";
 
 function WindowTitleBarButton(props: ComponentProps<"button">) {
   return (

@@ -81,6 +81,7 @@ export function useDraggable({
       if (dragOffset) {
         setDragged(true);
         throttledOnDragMove?.(getDragPosition(event, dragOffset));
+        window.document.body.classList.add(DRAG_CLASS);
       }
     },
     [dragOffset, throttledOnDragMove, getDragPosition]
@@ -119,7 +120,6 @@ export function useDraggable({
         setDragOffset(dragOffset);
         onDragStart?.(getDragPosition(event, dragOffset));
         setDragged(false);
-        window.document.body.classList.add(DRAG_CLASS);
       };
 
       handle.addEventListener("dragstart", preventDefaultDrag);

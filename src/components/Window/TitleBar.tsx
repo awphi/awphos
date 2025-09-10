@@ -48,6 +48,11 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
     >
       <div
         ref={dragHandle}
+        onDoubleClick={() => {
+          if (maximizable) {
+            setProps({ maximized: !maximized });
+          }
+        }}
         className="pl-2 flex-1 h-full flex gap-2 items-center overflow-hidden"
       >
         <Icon className="min-w-fit" width={16} height={16} />

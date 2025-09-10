@@ -13,9 +13,15 @@ import {
 export interface ApplicationProps {
   title: string;
   size: CSSSize;
+  minSize: CSSSize;
   topLeft: Position;
   maximized: boolean;
   minimized: boolean;
+  draggable: boolean;
+  resizable: boolean;
+  minimizable: boolean;
+  maximizable: boolean;
+  showTitleBar: boolean;
 }
 
 // TODO could be a more specific type?
@@ -77,13 +83,23 @@ export const activeApplicationsSlice = createSlice({
         );
       }
 
+      // TODO could use applyDefaults + some deep cloning?
       const props = Object.assign<ApplicationProps, Partial<ApplicationProps>>(
         {
-          size: { ...def.defaultSize },
-          topLeft: { ...def.defaultPosition },
           title: def.name,
           maximized: false,
           minimized: false,
+          minimizable: true,
+          maximizable: true,
+          resizable: true,
+          draggable: true,
+          showTitleBar: true,
+          ...def.defaultProps,
+          topLeft: { ...(def.defaultProps.topLeft ?? { x: 100, y: 100 }) },
+          size: { ...(def.defaultProps.size ?? { width: 250, height: 100 }) },
+          minSize: {
+            ...(def.defaultProps.minSize ?? { width: 250, height: 100 }),
+          },
         },
         userProps
       );

@@ -26,7 +26,7 @@ export interface WindowTitleBarProps {
 export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
   const {
     application: {
-      props: { title, maximized },
+      props: { title, maximized, minimizable, maximizable },
     },
     setProps,
     close,
@@ -56,19 +56,23 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
         </p>
       </div>
       <div className="h-full flex">
-        <WindowTitleBarButton
-          onClick={(e) => {
-            setProps({ minimized: true });
-            e.stopPropagation();
-          }}
-        >
-          <Minus width={18} />
-        </WindowTitleBarButton>
-        <WindowTitleBarButton
-          onClick={() => setProps({ maximized: !maximized })}
-        >
-          {maximized ? <Minimize2 width={16} /> : <Maximize2 width={16} />}
-        </WindowTitleBarButton>
+        {minimizable && (
+          <WindowTitleBarButton
+            onClick={(e) => {
+              setProps({ minimized: true });
+              e.stopPropagation();
+            }}
+          >
+            <Minus width={18} />
+          </WindowTitleBarButton>
+        )}
+        {maximizable && (
+          <WindowTitleBarButton
+            onClick={() => setProps({ maximized: !maximized })}
+          >
+            {maximized ? <Minimize2 width={16} /> : <Maximize2 width={16} />}
+          </WindowTitleBarButton>
+        )}
         <WindowTitleBarButton
           className={cn("hover:bg-red-500/75", { "rounded-tr-md": !maximized })}
           onClick={close}

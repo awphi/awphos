@@ -22,7 +22,14 @@ store.dispatch(
 
 store.dispatch(
   openApplication({
-    definitionId: "welcome",
-    applicationId: "welcome-intro", // consistent ID so SSR matches CSR
+    definitionId: "sticky-note",
+    applicationId: "welcome-note",
+    props: {
+      size: {
+        height: 460,
+        width: 300,
+      },
+      title: "Sticky Note - Welcome!",
+    },
   })
 );

@@ -1,7 +1,10 @@
-import Welcome from "@/applications/Welcome";
-import type { Position, CSSSize } from "@/utils/positions";
 import { SiWikipedia } from "@icons-pack/react-simple-icons";
-import { AppWindowIcon, GamepadIcon, SettingsIcon } from "lucide-react";
+import {
+  AppWindowIcon,
+  GamepadIcon,
+  SettingsIcon,
+  StickyNoteIcon,
+} from "lucide-react";
 import { type ComponentProps, type FC } from "react";
 import Wikipedia from "./Wikipedia";
 import StartMenu from "./StartMenu";
@@ -9,6 +12,8 @@ import TwentyFortyEight from "./TwentyFortyEight";
 import { applyDefaults, deepFreeze } from "@/utils";
 import type { HTMLMotionProps, TargetAndTransition } from "motion/react";
 import SystemSettings from "./SystemSettings";
+import StickyNote from "./StickyNote";
+import type { ApplicationProps } from "@/store/applications";
 
 export interface ApplicationDefinition {
   name: string;
@@ -20,28 +25,6 @@ export interface ApplicationDefinition {
    */
   instanceLimit?: number;
   /**
-   * Default window size.
-   * @defaultValue (500, 300)
-   */
-  defaultSize?: CSSSize;
-  /**
-   * Default window position.
-   * @defaultValue (100, 100)
-   */
-  defaultPosition?: Position;
-  /**
-   * @default true
-   */
-  draggable?: boolean;
-  /**
-   * @default true
-   */
-  resizable?: boolean;
-  /**
-   * @default true
-   */
-  showTitleBar?: boolean;
-  /**
    * @default true
    */
   showInTaskbar?: boolean;
@@ -50,10 +33,6 @@ export interface ApplicationDefinition {
    */
   showInStartMenu?: boolean;
   /**
-   * @defaultValue (250, 100)
-   */
-  minSize?: CSSSize;
-  /**
    * @default {}
    */
   windowProps?: HTMLMotionProps<"div">;
@@ -61,6 +40,10 @@ export interface ApplicationDefinition {
    * @default ['opacity', 'scale']
    */
   animatedProps?: (keyof TargetAndTransition)[];
+  /**
+   * @default {}
+   */
+  defaultProps?: Partial<ApplicationProps>;
 }
 
 const DEFAULT_DEFINITION: Required<ApplicationDefinition> = deepFreeze({
@@ -68,25 +51,11 @@ const DEFAULT_DEFINITION: Required<ApplicationDefinition> = deepFreeze({
   component: () => null,
   icon: () => null,
   instanceLimit: Infinity,
-  defaultSize: {
-    width: 500,
-    height: 300,
-  },
-  defaultPosition: {
-    x: 100,
-    y: 100,
-  },
-  draggable: true,
-  resizable: true,
-  showTitleBar: true,
   showInTaskbar: true,
   showInStartMenu: true,
-  minSize: {
-    width: 250,
-    height: 100,
-  },
   windowProps: {},
   animatedProps: ["scale", "opacity"],
+  defaultProps: {},
 });
 
 export interface ApplicationsRegistry {
@@ -106,22 +75,16 @@ export const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
         name: "2048",
         component: TwentyFortyEight,
         icon: GamepadIcon,
-        defaultSize: {
-          width: 720,
-          height: 380,
-        },
-        minSize: {
-          width: 380,
-          height: 380,
-        },
-      },
-      welcome: {
-        name: "Welcome",
-        component: Welcome,
-        icon: AppWindowIcon,
-        defaultSize: {
-          height: 350,
-          width: 500,
+
+        defaultProps: {
+          size: {
+            width: 720,
+            height: 380,
+          },
+          minSize: {
+            width: 380,
+            height: 380,
+          },
         },
       },
       "system-settings": {
@@ -134,20 +97,42 @@ export const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
         name: "Start Menu",
         component: StartMenu,
         icon: AppWindowIcon,
-        resizable: false,
-        draggable: false,
-        showTitleBar: false,
         showInTaskbar: false,
         showInStartMenu: false,
-        defaultPosition: { x: 0, y: 0 },
-        defaultSize: { height: "60vh", width: "15vw" },
-        minSize: { width: 300, height: "60vh" },
         instanceLimit: 1,
         windowProps: {
           className: "origin-bottom",
           style: { bottom: 0 },
         },
+        defaultProps: {
+          draggable: false,
+          resizable: false,
+          topLeft: {
+            x: 0,
+            y: 0,
+          },
+          size: { height: "60vh", width: "15vw" },
+          minSize: { width: 300, height: "60vh" },
+          showTitleBar: false,
+        },
         animatedProps: ["opacity", "scaleY"],
+      },
+      "sticky-note": {
+        name: "Sticky Note",
+        component: StickyNote,
+        icon: StickyNoteIcon,
+        defaultProps: {
+          minimizable: false,
+          maximizable: false,
+          size: {
+            width: 300,
+            height: 300,
+          },
+          minSize: {
+            height: 300,
+            width: 300,
+          },
+        },
       },
     },
     DEFAULT_DEFINITION

@@ -28,16 +28,21 @@ export interface WindowProps extends PropsWithChildren {
 function Window() {
   const {
     application: {
-      props: { maximized, topLeft, size, minimized },
+      props: {
+        maximized,
+        topLeft,
+        size,
+        minimized,
+        draggable,
+        resizable,
+        minSize,
+        showTitleBar,
+      },
       state,
       applicationId,
     },
     definition: {
       component: Component,
-      showTitleBar,
-      draggable,
-      resizable,
-      minSize,
       animatedProps,
       windowProps: {
         className: windowClassName,

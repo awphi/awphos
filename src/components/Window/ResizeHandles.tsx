@@ -36,9 +36,8 @@ function WindowResizeHandle({
   const {
     setProps,
     application: {
-      props: { topLeft, size },
+      props: { topLeft, size, minSize },
     },
-    definition: { minSize },
   } = useCurrentApplication();
   const ref = useRef<HTMLDivElement>(null);
   const [initial, setInitial] = useState<{

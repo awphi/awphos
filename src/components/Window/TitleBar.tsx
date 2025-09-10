@@ -72,7 +72,10 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
         >
           {maximized ? <Minimize2 width={16} /> : <Maximize2 width={16} />}
         </WindowTitleBarButton>
-        <WindowTitleBarButton className="hover:bg-red-500/75" onClick={close}>
+        <WindowTitleBarButton
+          className={cn("hover:bg-red-500/75", { "rounded-tr-md": !maximized })}
+          onClick={close}
+        >
           <X width={18} />
         </WindowTitleBarButton>
       </div>

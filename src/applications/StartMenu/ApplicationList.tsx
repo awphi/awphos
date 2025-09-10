@@ -1,4 +1,4 @@
-import applicationsRegistry from "..";
+import { applicationsRegistry } from "..";
 import { useMemo } from "react";
 import { openApplication } from "@/store/applications";
 import useAppDispatch from "@/hooks/useAppDispatch";

@@ -54,20 +54,16 @@ export interface ApplicationDefinition {
    */
   minSize?: CSSSize;
   /**
-   * @default ""
-   */
-  className?: HTMLMotionProps<"div">["className"];
-  /**
    * @default {}
    */
-  style?: HTMLMotionProps<"div">["style"];
+  windowProps?: HTMLMotionProps<"div">;
   /**
    * @default ['opacity', 'scale']
    */
   animatedProps?: (keyof TargetAndTransition)[];
 }
 
-const DEFAULT_DEFINITION: Required<ApplicationDefinition> = {
+const DEFAULT_DEFINITION: Required<ApplicationDefinition> = deepFreeze({
   name: "Unknown",
   component: () => null,
   icon: () => null,
@@ -89,17 +85,16 @@ const DEFAULT_DEFINITION: Required<ApplicationDefinition> = {
     width: 250,
     height: 100,
   },
-  className: "",
-  style: {},
+  windowProps: {},
   animatedProps: ["scale", "opacity"],
-};
+});
 
 export interface ApplicationsRegistry {
   definitions: Record<string, Required<ApplicationDefinition>>;
 }
 
 // TODO may need moving into redux state to support "installation" of custom applications at runtime
-const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
+export const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
   definitions: applyDefaults<ApplicationDefinition>(
     {
       wikipedia: {
@@ -148,8 +143,10 @@ const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
         defaultSize: { height: "60vh", width: "15vw" },
         minSize: { width: 300, height: "60vh" },
         instanceLimit: 1,
-        className: "origin-bottom",
-        style: { bottom: 0 },
+        windowProps: {
+          className: "origin-bottom",
+          style: { bottom: 0 },
+        },
         animatedProps: ["opacity", "scaleY"],
       },
     },
@@ -157,4 +154,12 @@ const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
   ),
 });
 
-export default applicationsRegistry;
+export function getApplicationDefinition(
+  id: string
+): Required<ApplicationDefinition> {
+  return applicationsRegistry.definitions[id] ?? DEFAULT_DEFINITION;
+}
+
+export function isValidApplicationDefinitionId(id: string): boolean {
+  return id in applicationsRegistry.definitions;
+}

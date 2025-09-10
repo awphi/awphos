@@ -1,9 +1,9 @@
 import { X, Maximize2, Minimize2, Minus } from "lucide-react";
 import { WINDOW_CONTENT_CLASSNAME, WINDOW_TITLE_BAR_HEIGHT } from "./constants";
-import applicationsRegistry from "@/applications";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 import type { ComponentProps, RefObject } from "react";
 import { cn } from "@/utils";
+import { getApplicationDefinition } from "@/applications";
 
 function WindowTitleBarButton(props: ComponentProps<"button">) {
   return (
@@ -28,14 +28,12 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
   const {
     application: {
       props: { title, maximized },
-      definitionId,
     },
     setProps,
     close,
     isFocused,
+    definition: { icon: Icon },
   } = useCurrentApplication();
-  const def = applicationsRegistry.definitions[definitionId];
-  const Icon = def.icon;
 
   return (
     <div

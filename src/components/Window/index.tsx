@@ -39,8 +39,11 @@ function Window() {
       resizable,
       minSize,
       animatedProps,
-      style: styleProp,
-      className,
+      windowProps: {
+        className: windowClassName,
+        style: windowStyleProp,
+        ...windowProps
+      },
     },
     forceClose,
     focus,
@@ -120,12 +123,12 @@ function Window() {
     return {
       ...renderedPosition,
       ...renderedSize,
-      ...styleProp,
+      ...windowStyleProp,
       minWidth: minSize.width,
       minHeight: minSize.height,
       zIndex,
     };
-  }, [renderedPosition, renderedSize, styleProp, minSize, zIndex]);
+  }, [renderedPosition, renderedSize, windowStyleProp, minSize, zIndex]);
 
   return (
     <motion.div
@@ -137,7 +140,7 @@ function Window() {
       transition={{ type: "spring", bounce: 0.2, duration: 0.2 }}
       className={cn(
         "shadow-md flex flex-col absolute overflow-visible ",
-        className
+        windowClassName
       )}
       style={style}
       onAnimationComplete={() => {
@@ -146,6 +149,7 @@ function Window() {
         }
       }}
       {...animationProps}
+      {...windowProps}
     >
       {resizable ? (
         <WindowResizeHandles onResizeStateChange={setResizing} />

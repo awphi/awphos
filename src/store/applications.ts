@@ -1,8 +1,11 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import applicationsRegistry from "@/applications";
 import type { CSSSize, Position } from "@/utils/positions";
 import { assignSafe, removeFromArray } from "@/utils";
 import { shallowEqual } from "react-redux";
+import {
+  getApplicationDefinition,
+  isValidApplicationDefinitionId,
+} from "@/applications";
 
 /**
  * Mutable properties of a running application
@@ -58,11 +61,10 @@ export const activeApplicationsSlice = createSlice({
         props: userProps = {},
         applicationId = crypto.randomUUID(),
       } = payload;
-      const def = applicationsRegistry.definitions[definitionId];
-
-      if (def === undefined) {
+      if (!isValidApplicationDefinitionId(definitionId)) {
         throw new Error(`Unknown application definition ID: ${definitionId}`);
       }
+      const def = getApplicationDefinition(definitionId);
 
       const currentApplications = Object.values(state.applications);
       const existingInstances = currentApplications.filter(

@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import TaskBarApplicationIcon, {
   type TaskBarApplicationIconProps,
 } from "./ApplicationIcon";
-import applicationsRegistry from "@/applications";
+import { getApplicationDefinition } from "@/applications";
 
 // TODO eventually replace with some global state
 const pinnedApplications = ["wikipedia", "2048"] as const;
@@ -15,7 +15,7 @@ function getTaskBarApplications(
   const result = new Map<string, TaskBarApplicationIconProps>();
 
   function append(definitionId: string, applicationId?: string): void {
-    const def = applicationsRegistry.definitions[definitionId];
+    const def = getApplicationDefinition(definitionId);
     if (!def.showInTaskbar) {
       return;
     }

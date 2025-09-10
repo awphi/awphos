@@ -1,24 +1,46 @@
 import { useCallback, useMemo } from "react";
 import useAppDispatch from "./useAppDispatch";
 import useAppSelector from "./useAppSelector";
-import applicationsRegistry from "@/applications";
 import {
   type ApplicationProps,
   startCloseApplication,
   setApplicationProps,
   finalizeCloseApplication,
+  type Application,
 } from "@/store/applications";
 import { useFocus } from "./useFocus";
+import { getApplicationDefinition } from "@/applications";
+
+export const DUMMY_APPLICATION: Application = {
+  applicationId: "dummy",
+  definitionId: "dummy",
+  props: {
+    title: "",
+    topLeft: {
+      x: 0,
+      y: 0,
+    },
+    size: {
+      width: 0,
+      height: 0,
+    },
+    maximized: false,
+    minimized: false,
+  },
+  state: "open",
+  args: {},
+};
 
 export function useApplication(applicationId: string) {
   const application = useAppSelector(
-    (state) => state.applications.applications[applicationId]
+    (state) =>
+      state.applications.applications[applicationId] ?? DUMMY_APPLICATION
   );
   const dispatch = useAppDispatch();
   const { focus: focusApp, isFocused: isAppFocused, focusQueue } = useFocus();
 
   const definition = useMemo(
-    () => applicationsRegistry.definitions[application.definitionId],
+    () => getApplicationDefinition(application.definitionId),
     [application.definitionId]
   );
 

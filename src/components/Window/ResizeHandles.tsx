@@ -66,10 +66,8 @@ function WindowResizeHandle({
         topLeft,
       });
       onResizeStateChange?.(true);
-      // only need to apply cursor class to body as everything else doesn't receive pointer events during drag
-      window.document.body.classList.add(cursorClass);
     },
-    [topLeft, size, cursorClass, onResizeStateChange]
+    [topLeft, size, onResizeStateChange]
   );
 
   const onDragMove = useCallback(
@@ -77,6 +75,9 @@ function WindowResizeHandle({
       if (initial === null) {
         return;
       }
+
+      // only need to apply cursor class to body as everything else doesn't receive pointer events during drag
+      window.document.body.classList.add(cursorClass);
 
       // TODO support non-numeric sizes with calc()?
       if (!isNumericSize(initial.size) || !isNumericSize(minSize)) {
@@ -118,7 +119,7 @@ function WindowResizeHandle({
 
       setProps(update);
     },
-    [initial, variant, minSize, setProps, x, y]
+    [initial, variant, minSize, setProps, x, y, cursorClass]
   );
 
   const onDragEnd = useCallback(() => {

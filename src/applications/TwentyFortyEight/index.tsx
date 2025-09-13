@@ -107,6 +107,8 @@ export default function TwentyFortyEight() {
           <HelpCircleIcon />
         </PopoverTrigger>
         <PopoverContent
+          updatePositionStrategy="always"
+          onOpenAutoFocus={(e) => e.preventDefault()}
           avoidCollisions={false}
           sideOffset={8}
           onInteractOutside={(e) =>

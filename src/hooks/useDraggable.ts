@@ -18,6 +18,7 @@ export interface UseDraggableArgs {
   onDragStart?: (position: Position) => void;
   buttons?: number;
   restrictToWindow?: boolean; // TODO could be more generic and support arbitrary rects via element ref
+  rounded?: boolean;
 }
 
 // prevent all pointer events on anything not explicitly set with pointer-events: auto while dragging
@@ -33,6 +34,7 @@ export function useDraggable({
   onDragStart,
   restrictToWindow,
   buttons = 1,
+  rounded,
 }: UseDraggableArgs) {
   const [dragOffset, setDragOffset] = useState<Position | null>(null);
   const [dragged, setDragged] = useState(false);
@@ -67,12 +69,15 @@ export function useDraggable({
         }
       }
 
+      const x = eventPos.x - offset.x;
+      const y = eventPos.y - offset.y;
+
       return {
-        x: eventPos.x - offset.x,
-        y: eventPos.y - offset.y,
+        x: rounded ? Math.round(x) : x,
+        y: rounded ? Math.round(y) : y,
       };
     },
-    [restrictToWindow]
+    [restrictToWindow, rounded]
   );
 
   useWindowEvent(

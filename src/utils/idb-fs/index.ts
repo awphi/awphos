@@ -4,9 +4,10 @@ import type { File, FileData, Folder, INode, MkdirOpts, RmOpts } from "./types";
 import { createINode, getRoot, promisifyRequest } from "./utils";
 
 export default class IDBFileSystem {
-  private _cwd: string = "/";
+  private _cwd: string;
 
-  constructor() {
+  constructor(cwd: string = "/") {
+    this._cwd = cwd;
     const { loading, db } = getDbStatus();
     if (!db && !loading) {
       createDb();

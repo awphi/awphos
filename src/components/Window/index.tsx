@@ -85,6 +85,7 @@ function Window() {
     restrictToWindow: true,
     onDragMove,
     onDragEnd,
+    rounded: true,
   });
 
   const renderedPosition = useMemo(() => {

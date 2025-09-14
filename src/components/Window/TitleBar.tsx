@@ -45,6 +45,8 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
         height: WINDOW_TITLE_BAR_HEIGHT,
         minHeight: WINDOW_TITLE_BAR_HEIGHT,
       }}
+      // prevent title bar ever receiving focus
+      onPointerDown={(e) => e.preventDefault()}
     >
       <div
         ref={dragHandle}
@@ -73,7 +75,11 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
         )}
         {maximizable && (
           <WindowTitleBarButton
-            onClick={() => setProps({ maximized: !maximized })}
+            onClick={(e) => {
+              setProps({ maximized: !maximized });
+              e.stopPropagation();
+              e.preventDefault();
+            }}
           >
             {maximized ? <Minimize2 width={16} /> : <Maximize2 width={16} />}
           </WindowTitleBarButton>

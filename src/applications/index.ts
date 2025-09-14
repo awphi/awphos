@@ -4,6 +4,7 @@ import {
   GamepadIcon,
   SettingsIcon,
   StickyNoteIcon,
+  TerminalIcon,
 } from "lucide-react";
 import { type ComponentProps, type FC } from "react";
 import Wikipedia from "./Wikipedia";
@@ -14,6 +15,7 @@ import type { HTMLMotionProps, TargetAndTransition } from "motion/react";
 import SystemSettings from "./SystemSettings";
 import StickyNote from "./StickyNote";
 import type { ApplicationProps } from "@/store/applications";
+import Terminal from "./Terminal";
 
 export interface ApplicationDefinition {
   name: string;
@@ -133,6 +135,11 @@ export const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
             width: 300,
           },
         },
+      },
+      terminal: {
+        name: "Terminal",
+        component: Terminal,
+        icon: TerminalIcon,
       },
     },
     DEFAULT_DEFINITION

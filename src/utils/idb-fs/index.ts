@@ -3,11 +3,18 @@ import { createDb, getDb, getDbStatus } from "./db";
 import type { File, FileData, Folder, INode, MkdirOpts, RmOpts } from "./types";
 import { createINode, getRoot, promisifyRequest } from "./utils";
 
+export interface IDBFileSystemParams {
+  cwd?: string;
+  onCwdChanged?: () => void;
+}
+
 export default class IDBFileSystem {
   private _cwd: string;
+  private _onCwdChanged: (() => void) | undefined;
 
-  constructor(cwd: string = "/") {
+  constructor({ cwd = "/", onCwdChanged }: IDBFileSystemParams) {
     this._cwd = cwd;
+    this._onCwdChanged = onCwdChanged;
     const { loading, db } = getDbStatus();
     if (!db && !loading) {
       createDb();
@@ -48,6 +55,8 @@ export default class IDBFileSystem {
     if (!isDir) {
       throw new Error(`Not a directory: ${newDir}`);
     }
+    this._cwd = newDir;
+    this._onCwdChanged?.();
     return this.cwd();
   }
 

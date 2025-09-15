@@ -1,5 +1,4 @@
 import useCurrentApplication from "@/hooks/useCurrentApplication";
-import { useIdbFileSystem } from "@/hooks/useIdbFileSystem";
 import {
   useCallback,
   useEffect,
@@ -9,22 +8,21 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
-import { makeLine, type SelectionRange, type TerminalLine } from "./utils";
 import { useWindowEvent } from "@/hooks/useWindowEvent";
 import { cn } from "@/utils";
+import { useTerminalCommands } from "./useTerminalCommands";
+
+export interface SelectionRange {
+  start: number;
+  end: number;
+}
 
 export default function Terminal() {
-  const {
-    application: { args },
-    setProps,
-    isFocused,
-  } = useCurrentApplication();
+  const { setProps, isFocused } = useCurrentApplication();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const { cwd } = useIdbFileSystem(
-    typeof args.directory === "string" ? args.directory : undefined
-  );
-  const [lines, setLines] = useState<TerminalLine[]>([]);
+  const { execute, cwd } = useTerminalCommands();
+  const [lines, setLines] = useState<ReactNode[]>([]);
   const prompt = useMemo(() => `admin@adamwph ${cwd} %`, [cwd]);
   const [input, setInput] = useState("");
   const [selection, setSelection] = useState<SelectionRange>({
@@ -82,15 +80,19 @@ export default function Terminal() {
   }, []);
 
   const onKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    async (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if (!textAreaRef.current) {
         return;
       }
 
       if (e.key === "Enter" && !e.shiftKey) {
-        setLines((current) => current.concat(makeLine(`${prompt} ${input}`)));
+        const result = await execute(input);
+        setLines((current) =>
+          current.concat(`${prompt} ${input}`).concat(result)
+        );
         textAreaRef.current.value = "";
         setInput("");
+        setSelection({ start: 0, end: 0 });
         e.preventDefault();
       }
 
@@ -98,7 +100,7 @@ export default function Terminal() {
         contentRef.current?.scrollTo(0, contentRef.current?.scrollHeight ?? 0);
       });
     },
-    [input, prompt]
+    [input, prompt, execute]
   );
 
   useEffect(() => {
@@ -133,10 +135,10 @@ export default function Terminal() {
         }}
       />
       <div className="text-white flex flex-col">
-        {lines.map((v) => {
+        {lines.map((v, i) => {
           return (
-            <div className="whitespace-pre-wrap" key={v.key}>
-              {v.text}
+            <div className="whitespace-pre-wrap" key={i}>
+              {v}
             </div>
           );
         })}

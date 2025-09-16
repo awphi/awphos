@@ -78,7 +78,7 @@ export default class IDBFileSystem {
       throw new Error(`invalid parent: ${childPath}`);
     }
 
-    if (await this.exists(childPath)) {
+    if ((await this.exists(childPath)) && !recursive) {
       throw new Error(`directory already exists: ${childPath}`);
     }
 

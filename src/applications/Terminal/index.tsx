@@ -10,7 +10,9 @@ import {
 } from "react";
 import { useWindowEvent } from "@/hooks/useWindowEvent";
 import { clamp, cn } from "@/utils";
-import { LINE_LIMIT, useTerminalCommands } from "./useTerminalCommands";
+import { useTerminalCommands } from "./useTerminalCommands";
+import { ScrollArea } from "@/components/ScrollArea";
+import { LINE_LIMIT } from "./constants";
 
 export interface SelectionRange {
   start: number;
@@ -26,7 +28,12 @@ export default function Terminal() {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const { execute, cwd } = useTerminalCommands({ applicationId });
-  const [lines, setLines] = useState<ReactNode[]>([]);
+  const [lines, setLines] = useState<ReactNode[]>([
+    <span key="welcome" className="text-neutral-400">
+      Welcome to the adamw.ph online terminal - type &quot;help&quot; to find
+      out more!
+    </span>,
+  ]);
   const prompt = useMemo(() => `admin@adamwph ${cwd} %`, [cwd]);
   const [input, setInput] = useState("");
   const [selection, setSelection] = useState<SelectionRange>({
@@ -142,10 +149,10 @@ export default function Terminal() {
   );
 
   return (
-    <div
+    <ScrollArea
       onClick={focusInput}
       ref={contentRef}
-      className="overflow-auto px-2 py-1 bg-black w-full h-full font-mono"
+      className="px-2 py-1 bg-neutral-950 w-full h-full font-mono"
     >
       <textarea
         ref={textAreaRef}
@@ -156,7 +163,7 @@ export default function Terminal() {
           updateInputSelection();
         }}
       />
-      <div className="text-white flex flex-col">
+      <div className="text-neutral-100 flex flex-col">
         {lines.map((v, i) => {
           return (
             <div className="whitespace-pre-wrap" key={i}>
@@ -168,6 +175,6 @@ export default function Terminal() {
       <div className="whitespace-pre-wrap">
         {prompt} {renderedInput}
       </div>
-    </div>
+    </ScrollArea>
   );
 }

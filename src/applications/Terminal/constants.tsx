@@ -1,15 +1,12 @@
-import IDBFileSystem from "@/utils/idb-fs";
-import { useCallback, useMemo, useState, type ReactNode } from "react";
-import stringArgv from "string-argv";
-import mri from "mri";
-import useAppDispatch from "@/hooks/useAppDispatch";
-import { startCloseApplication } from "@/store/applications";
+import type useAppDispatch from "@/hooks/useAppDispatch";
+import { openApplication, startCloseApplication } from "@/store/applications";
+import type IDBFileSystem from "@/utils/idb-fs";
+import type mri from "mri";
+import type { ReactNode } from "react";
 
-export interface UseTerminalCommandsArgs {
-  applicationId: string;
-}
+export const LINE_LIMIT = 256; // very low - need to virtualise the terminal renderer to increase
 
-interface CommandDef {
+export interface CommandDef {
   run: (params: {
     args: mri.Argv;
     input: string;
@@ -17,27 +14,31 @@ interface CommandDef {
     dispatch: ReturnType<typeof useAppDispatch>;
     applicationId: string;
   }) => Promise<ReactNode[]> | ReactNode[];
+  usage: string;
+  description: ReactNode;
   parseOptions?: mri.Options;
 }
 
-export const LINE_LIMIT = 256; // very low - need to virtualise the terminal renderer to increase
-
-const ALIASES: Record<string, string> = {
+export const ALIASES: Record<string, string> = {
   empty: "clear",
   close: "exit",
   quit: "exit",
 };
 
-const COMMANDS: Record<string, CommandDef | undefined> = {
+export const COMMANDS: Record<string, CommandDef | undefined> = {
   clear: {
     run() {
       return Array.from({ length: LINE_LIMIT }, () => "");
     },
+    description: "Clear the terminal",
+    usage: "clear",
   },
   pwd: {
     run({ fs }) {
       return [fs.cwd()];
     },
+    description: "Prints the current working directory",
+    usage: "pwd",
   },
   cd: {
     async run({ fs, args }) {
@@ -52,6 +53,8 @@ const COMMANDS: Record<string, CommandDef | undefined> = {
       }
       return [fs.cwd()];
     },
+    description: "Change the current working directory",
+    usage: "cd <dir>",
   },
   mkdir: {
     async run({ fs, args }) {
@@ -76,6 +79,16 @@ const COMMANDS: Record<string, CommandDef | undefined> = {
         p: false,
       },
     },
+    description: (
+      <>
+        <p>Make a new directory or directories on the local file system</p>{" "}
+        <p>
+          Use the <code>-p</code> flag to create all necessary parent
+          directories if they don&apos;t yet exist
+        </p>
+      </>
+    ),
+    usage: "mkdir [-p] <dirs>",
   },
   ls: {
     async run({ fs, args }) {
@@ -112,6 +125,20 @@ const COMMANDS: Record<string, CommandDef | undefined> = {
         a: false,
       },
     },
+    description: (
+      <>
+        <p>List all the files and directories in a directory</p>
+        <p>
+          Displays the contents of the current working directory if no arguments
+          are passed
+        </p>
+        <p>
+          Use the <code>-a</code> flag to also display hidden files and
+          directories
+        </p>
+      </>
+    ),
+    usage: "ls [-a] <dirs>",
   },
   cat: {
     async run({ fs, args }) {
@@ -130,19 +157,25 @@ const COMMANDS: Record<string, CommandDef | undefined> = {
 
       return result;
     },
+    description: "Echo the content of a given file or set of files to stdout",
+    usage: "cat <files>",
   },
   echo: {
-    async run({ input }) {
+    run({ input }) {
       // not totally accurate since strings aren't escaped but whatever
       return [input.slice("echo ".length, input.length)];
     },
     parseOptions: { unknown() {} },
+    description: "Echo the passed input to stdout",
+    usage: "echo <input>",
   },
   exit: {
-    async run({ dispatch, applicationId }) {
+    run({ dispatch, applicationId }) {
       dispatch(startCloseApplication(applicationId));
       return ["Exiting..."];
     },
+    description: "Close the terminal session",
+    usage: "exit",
   },
   touch: {
     async run({ fs, args }) {
@@ -161,62 +194,20 @@ const COMMANDS: Record<string, CommandDef | undefined> = {
 
       return [" "];
     },
+    description: "Create a new file or set of files on the local file system",
+    usage: "touch <files>",
   },
-  // TODO touch, rm and eventually mv, bonus: ping or basic curl
-};
-
-function resolveCommand(commandStr: string): CommandDef | undefined {
-  const command = COMMANDS[commandStr];
-  const alias = ALIASES[commandStr];
-
-  if (command === undefined && alias !== undefined) {
-    return resolveCommand(alias);
-  }
-
-  return command;
-}
-
-export function useTerminalCommands({
-  applicationId,
-}: UseTerminalCommandsArgs) {
-  const fs = useMemo(() => {
-    return new IDBFileSystem({
-      onCwdChanged: () => setCwd(fs.cwd()),
-    });
-  }, []);
-
-  // expose a reactive version of fs.cwd() for rendering purposes
-  const [cwd, setCwd] = useState(fs.cwd());
-  const dispatch = useAppDispatch();
-
-  const execute = useCallback(
-    async (input: string): Promise<ReactNode[]> => {
-      // TODO before processing commands we should support chaining and redirection - piping is out of scope
-      const argv = stringArgv(input);
-      const [commandStr, ...rest] = argv;
-      const command = resolveCommand(commandStr);
-      if (command === undefined) {
-        return [`command not found: ${commandStr}`];
-      }
-
-      let unknown: string | undefined;
-      const args = mri(rest, {
-        unknown(flag) {
-          unknown = flag;
-        },
-        ...command.parseOptions,
-      });
-      if (unknown) {
-        return [`${commandStr}: bad option: ${unknown}`];
-      }
-
-      return await command.run({ args, fs, input, dispatch, applicationId });
+  help: {
+    run({ dispatch }) {
+      dispatch(
+        openApplication({
+          definitionId: "terminal-manual",
+        })
+      );
+      return ["Opening manual..."];
     },
-    [fs, dispatch, applicationId]
-  );
-
-  return {
-    execute,
-    cwd,
-  };
-}
+    description: "Opens this help manual",
+    usage: "help",
+  },
+  // TODO rm and eventually mv, bonus: ping or basic curl
+};

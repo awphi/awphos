@@ -1,6 +1,7 @@
 import { SiWikipedia } from "@icons-pack/react-simple-icons";
 import {
   AppWindowIcon,
+  BookIcon,
   GamepadIcon,
   SettingsIcon,
   StickyNoteIcon,
@@ -16,6 +17,7 @@ import SystemSettings from "./SystemSettings";
 import StickyNote from "./StickyNote";
 import type { ApplicationProps } from "@/store/applications";
 import Terminal from "./Terminal";
+import TerminalManual from "./Terminal/TerminalManual";
 
 export interface ApplicationDefinition {
   name: string;
@@ -140,6 +142,17 @@ export const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
         name: "Terminal",
         component: Terminal,
         icon: TerminalIcon,
+      },
+      "terminal-manual": {
+        name: "Terminal Manual",
+        component: TerminalManual,
+        icon: BookIcon,
+        defaultProps: {
+          size: {
+            width: 500,
+            height: 400,
+          },
+        },
       },
     },
     DEFAULT_DEFINITION

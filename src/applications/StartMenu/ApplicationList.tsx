@@ -6,6 +6,8 @@ import { useDebouncedState } from "@/hooks/useDebouncedState";
 import { motion } from "motion/react";
 import Input from "@/components/Input";
 
+const excludedApps = new Set(["start-menu", "terminal-manual"]);
+
 function StartMenuApplicationListButton({
   definitionId,
 }: {
@@ -40,7 +42,7 @@ export function StartMenuApplicationList() {
     () =>
       Object.entries(applicationsRegistry.definitions)
         .sort((a, b) => a[1].name.localeCompare(b[1].name))
-        .filter(([id]) => id !== "start-menu")
+        .filter(([id]) => !excludedApps.has(id))
         .filter(([, definition]) =>
           definition.name.toLowerCase().includes(debouncedSearch.toLowerCase())
         ),

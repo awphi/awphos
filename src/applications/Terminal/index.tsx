@@ -10,7 +10,7 @@ import {
 } from "react";
 import { useWindowEvent } from "@/hooks/useWindowEvent";
 import { clamp, cn } from "@/utils";
-import { useTerminalCommands } from "./useTerminalCommands";
+import { LINE_LIMIT, useTerminalCommands } from "./useTerminalCommands";
 
 export interface SelectionRange {
   start: number;
@@ -18,10 +18,14 @@ export interface SelectionRange {
 }
 
 export default function Terminal() {
-  const { setProps, isFocused } = useCurrentApplication();
+  const {
+    setProps,
+    isFocused,
+    application: { applicationId },
+  } = useCurrentApplication();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const { execute, cwd } = useTerminalCommands();
+  const { execute, cwd } = useTerminalCommands({ applicationId });
   const [lines, setLines] = useState<ReactNode[]>([]);
   const prompt = useMemo(() => `admin@adamwph ${cwd} %`, [cwd]);
   const [input, setInput] = useState("");
@@ -104,7 +108,7 @@ export default function Terminal() {
       if (e.key === "Enter" && !e.shiftKey) {
         const result = await execute(input);
         setLines((current) =>
-          current.concat(`${prompt} ${input}`).concat(result)
+          current.concat(`${prompt} ${input}`).concat(result).slice(-LINE_LIMIT)
         );
         setHistory((current) => [input].concat(current));
         setHistoryCursor(-1);

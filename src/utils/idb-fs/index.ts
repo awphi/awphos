@@ -53,7 +53,7 @@ export default class IDBFileSystem {
     const newDir = path.resolve(this.cwd(), pth);
     const isDir = await this.isDirectory(newDir);
     if (!isDir) {
-      throw new Error(`Not a directory: ${newDir}`);
+      throw new Error(`not a directory: ${newDir}`);
     }
     this._cwd = newDir;
     this._onCwdChanged?.();
@@ -75,11 +75,11 @@ export default class IDBFileSystem {
     const childPath = path.resolve(this.cwd(), pth);
     const parentPath = path.resolve(childPath, "..");
     if (parentPath === childPath) {
-      throw new Error(`Invalid parent: ${childPath}`);
+      throw new Error(`invalid parent: ${childPath}`);
     }
 
     if (await this.exists(childPath)) {
-      throw new Error(`Directory already exists: ${childPath}`);
+      throw new Error(`directory already exists: ${childPath}`);
     }
 
     let parent: INode | undefined;
@@ -88,10 +88,10 @@ export default class IDBFileSystem {
     }
 
     parent ??= await this.read(parentPath);
-
-    if (parent === undefined || parent.type !== "dir") {
-      throw new Error(`Could not read parent directory: ${parentPath}`);
+    if (parent?.type !== "dir") {
+      throw new Error(`not a directory: ${parentPath}`);
     }
+
     const child = createINode({
       type: "dir",
       name: path.parse(childPath).base,
@@ -114,9 +114,10 @@ export default class IDBFileSystem {
     }
 
     const parent = await this.read(parentPath);
-    if (parent === undefined || parent.type !== "dir") {
-      throw new Error(`Could not read parent directory: ${parentPath}`);
+    if (parent?.type !== "dir") {
+      throw new Error(`not a directory: ${parentPath}`);
     }
+
     const inode = createINode({
       type: "file",
       name: path.parse(filePath).base,
@@ -147,7 +148,7 @@ export default class IDBFileSystem {
     const filePath = path.resolve(this.cwd(), pth);
 
     if (filePath === "/") {
-      throw new Error("Cannot delete the root path.");
+      throw new Error("cannot rm /");
     }
 
     const item = await this.read(filePath);
@@ -155,7 +156,7 @@ export default class IDBFileSystem {
       if (force) {
         return;
       } else {
-        throw new Error(`File does not exist: ${filePath}`);
+        throw new Error(`file does not exist`);
       }
     }
 
@@ -192,8 +193,8 @@ export default class IDBFileSystem {
   async readFile(pth: string): Promise<File> {
     const filePath = path.resolve(this.cwd(), pth);
     const inode = await this.read(filePath);
-    if (inode === undefined || inode.type !== "file") {
-      throw new Error(`File not found: ${filePath}`);
+    if (inode?.type !== "file") {
+      throw new Error(`not a file: ${filePath}`);
     }
 
     const db = await getDb();
@@ -207,8 +208,8 @@ export default class IDBFileSystem {
   async readDir(pth: string): Promise<Folder> {
     const filePath = path.resolve(this.cwd(), pth);
     const inode = await this.read(filePath);
-    if (inode === undefined || inode.type !== "dir") {
-      throw new Error(`Dir not found: ${filePath}`);
+    if (inode?.type !== "dir") {
+      throw new Error(`not a directory: ${filePath}`);
     }
 
     const db = await getDb();

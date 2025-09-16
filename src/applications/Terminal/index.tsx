@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { useWindowEvent } from "@/hooks/useWindowEvent";
-import { cn } from "@/utils";
+import { clamp, cn } from "@/utils";
 import { useTerminalCommands } from "./useTerminalCommands";
 
 export interface SelectionRange {
@@ -29,6 +29,8 @@ export default function Terminal() {
     start: 0,
     end: 0,
   });
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyCursor, setHistoryCursor] = useState(-1); // -1 = empty
 
   const renderedInput = useMemo<ReactNode>(() => {
     const selectionClassName = isFocused
@@ -85,11 +87,27 @@ export default function Terminal() {
         return;
       }
 
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        const dir = e.key === "ArrowUp" ? 1 : -1;
+        const oldCursor = historyCursor;
+        const newCursor = clamp(oldCursor + dir, -1, history.length - 1);
+        setHistoryCursor(newCursor);
+        if (newCursor !== oldCursor) {
+          const entry = newCursor === -1 ? "" : history[newCursor];
+          setInput(entry);
+          textAreaRef.current.value = entry;
+          setSelection({ start: entry.length, end: entry.length });
+        }
+        e.preventDefault();
+      }
+
       if (e.key === "Enter" && !e.shiftKey) {
         const result = await execute(input);
         setLines((current) =>
           current.concat(`${prompt} ${input}`).concat(result)
         );
+        setHistory((current) => [input].concat(current));
+        setHistoryCursor(-1);
         textAreaRef.current.value = "";
         setInput("");
         setSelection({ start: 0, end: 0 });
@@ -100,7 +118,7 @@ export default function Terminal() {
         contentRef.current?.scrollTo(0, contentRef.current?.scrollHeight ?? 0);
       });
     },
-    [input, prompt, execute]
+    [input, prompt, execute, history, historyCursor]
   );
 
   useEffect(() => {

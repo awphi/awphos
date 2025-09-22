@@ -18,6 +18,7 @@
   --color-accent-foreground: var(--color-neutral-300);
   --color-popover: var(--color-neutral-800);
   --color-popover-foreground: var(--color-neutral-300);
+  --color-border: var(--color-neutral-600);
 }
 
 body {

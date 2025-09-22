@@ -1,5 +1,8 @@
 - Preferences redux slice to store things like background, date/time locale preference, apps on the task bar
-- Application icons
 - Desktop icons
-- Context menu - maybe components can add things (menu items tied to imperative methods etc.) to the event as it bubbles up and the top-level page.tsx actually renders captures that bubbled events and renders it
-- Finish idb-fs (add move) and spin out into separate library - can still live here in a monorepo maybe?
+- Context menus as needed - start with one on window titlebars
+- Rich text sticky notes that save to the file system
+
+--
+
+- Spin out into separate library - can still live here in a monorepo maybe?

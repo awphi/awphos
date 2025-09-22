@@ -35,6 +35,7 @@ export interface Application {
   applicationId: string;
   props: ApplicationProps;
   state: "open" | "closing";
+  parentId: string | null;
   args: ApplicationArgs;
 }
 
@@ -51,6 +52,7 @@ export interface ApplicationOpenArgs {
   applicationId?: string;
   args?: ApplicationArgs;
   props?: Partial<ApplicationProps>;
+  parentId?: string | null;
 }
 
 export const activeApplicationsSlice = createSlice({
@@ -120,6 +122,7 @@ export const activeApplicationsSlice = createSlice({
         props,
         args,
         state: "open",
+        parentId: payload.parentId ?? null,
       };
       state.applications[app.applicationId] = app;
       state.focusQueue.push(app.applicationId);
@@ -127,6 +130,13 @@ export const activeApplicationsSlice = createSlice({
     startCloseApplication(state, { payload }: PayloadAction<string>) {
       if (payload in state.applications) {
         state.applications[payload].state = "closing";
+      }
+
+      for (const [id, app] of Object.entries(state.applications)) {
+        if (app.parentId === payload) {
+          // TODO apply recursively? 1 level deep may be good enough for now
+          state.applications[id].state = "closing";
+        }
       }
     },
     finalizeCloseApplication(state, { payload }: PayloadAction<string>) {

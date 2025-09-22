@@ -82,6 +82,10 @@ export default function Terminal() {
     textAreaRef.current?.focus();
   }, []);
 
+  const scrollToBottom = useCallback(() => {
+    contentRef.current?.scrollTo(0, contentRef.current?.scrollHeight ?? 0);
+  }, []);
+
   const updateInputSelection = useCallback(() => {
     setSelection({
       start: textAreaRef.current?.selectionStart ?? 0,
@@ -125,11 +129,9 @@ export default function Terminal() {
         e.preventDefault();
       }
 
-      requestAnimationFrame(() => {
-        contentRef.current?.scrollTo(0, contentRef.current?.scrollHeight ?? 0);
-      });
+      scrollToBottom();
     },
-    [input, prompt, execute, history, historyCursor]
+    [input, prompt, execute, history, historyCursor, scrollToBottom]
   );
 
   useEffect(() => {
@@ -137,6 +139,8 @@ export default function Terminal() {
       focusInput();
     }
   }, [isFocused, focusInput]);
+
+  useEffect(() => scrollToBottom(), [lines, scrollToBottom]);
 
   useWindowEvent(
     "selectionchange",
@@ -151,7 +155,7 @@ export default function Terminal() {
   return (
     <ScrollArea
       onClick={focusInput}
-      ref={contentRef}
+      viewportRef={contentRef}
       className="px-2 py-1 bg-neutral-950 w-full h-full font-mono"
     >
       <textarea

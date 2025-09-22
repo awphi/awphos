@@ -28,6 +28,7 @@ export default class IDBFileSystem {
   private async read(pth: string): Promise<INode | undefined> {
     const parts = path.resolve(this.cwd(), pth).split(path.sep).filter(Boolean);
 
+    // TODO could LRU cache the results of these? invalidate on rm, mv,
     const db = await getDb();
     let current = await getRoot(db);
     let currentPath = "/";

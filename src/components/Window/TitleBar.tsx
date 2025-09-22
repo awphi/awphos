@@ -1,8 +1,20 @@
-import { X, Maximize2, Minimize2, Minus } from "lucide-react";
+import { X, Maximize2, Minimize2, Minus, MinusIcon, XIcon } from "lucide-react";
 import { WINDOW_CONTENT_CLASSNAME, WINDOW_TITLE_BAR_HEIGHT } from "./constants";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
-import type { ComponentProps, RefObject } from "react";
+import {
+  useCallback,
+  type ComponentProps,
+  type MouseEvent,
+  type RefObject,
+} from "react";
 import { cn } from "@/utils";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "../ContextMenu";
 
 function WindowTitleBarButton(props: ComponentProps<"button">) {
   return (
@@ -26,13 +38,35 @@ export interface WindowTitleBarProps {
 export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
   const {
     application: {
-      props: { title, maximized, minimizable, maximizable },
+      props: { title, maximized, minimizable, maximizable, minimized },
     },
     setProps,
     close,
     isFocused,
     definition: { icon: Icon },
   } = useCurrentApplication();
+
+  const ToggleMaximizeIcon = maximized ? Minimize2 : Maximize2;
+
+  const toggleMinimize = useCallback(
+    (e?: PointerEvent | MouseEvent) => {
+      if (minimizable) {
+        setProps({ minimized: !minimized });
+        e?.stopPropagation();
+      }
+    },
+    [setProps, minimizable, minimized]
+  );
+
+  const toggleMaximize = useCallback(
+    (e?: PointerEvent | MouseEvent) => {
+      if (maximizable) {
+        setProps({ maximized: !maximized });
+        e?.stopPropagation();
+      }
+    },
+    [maximizable, setProps, maximized]
+  );
 
   return (
     <div
@@ -48,40 +82,48 @@ export default function WindowTitleBar({ dragHandle }: WindowTitleBarProps) {
       // prevent title bar ever receiving focus
       onPointerDown={(e) => e.preventDefault()}
     >
-      <div
-        ref={dragHandle}
-        onDoubleClick={() => {
-          if (maximizable) {
-            setProps({ maximized: !maximized });
-          }
-        }}
-        className="pl-2 flex-1 h-full flex gap-2 items-center overflow-hidden"
-      >
-        <Icon className="min-w-fit" width={16} height={16} />
-        <p className="overflow-ellipsis whitespace-nowrap overflow-hidden">
-          {title}
-        </p>
-      </div>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <div
+            ref={dragHandle}
+            onDoubleClick={toggleMaximize}
+            className="pl-2 flex-1 h-full flex gap-2 items-center overflow-hidden"
+          >
+            <Icon className="min-w-fit" width={16} height={16} />
+            <p className="overflow-ellipsis whitespace-nowrap overflow-hidden">
+              {title}
+            </p>
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent className="bg-neutral-800/70 backdrop-blur-lg">
+          {minimizable && (
+            <ContextMenuItem onClick={toggleMinimize} disabled={minimized}>
+              <MinusIcon />
+              Minimize
+            </ContextMenuItem>
+          )}
+          {maximizable && (
+            <ContextMenuItem onClick={toggleMaximize}>
+              <ToggleMaximizeIcon />
+              {maximized ? "Restore" : "Maximize"}
+            </ContextMenuItem>
+          )}
+          <ContextMenuSeparator />
+          <ContextMenuItem onClick={close}>
+            <XIcon />
+            Close
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
       <div className="h-full flex">
         {minimizable && (
-          <WindowTitleBarButton
-            onClick={(e) => {
-              setProps({ minimized: true });
-              e.stopPropagation();
-            }}
-          >
+          <WindowTitleBarButton onClick={toggleMinimize}>
             <Minus width={18} />
           </WindowTitleBarButton>
         )}
         {maximizable && (
-          <WindowTitleBarButton
-            onClick={(e) => {
-              setProps({ maximized: !maximized });
-              e.stopPropagation();
-              e.preventDefault();
-            }}
-          >
-            {maximized ? <Minimize2 width={16} /> : <Maximize2 width={16} />}
+          <WindowTitleBarButton onClick={toggleMaximize}>
+            <ToggleMaximizeIcon width={16} />
           </WindowTitleBarButton>
         )}
         <WindowTitleBarButton

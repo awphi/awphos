@@ -3,8 +3,8 @@ import { ScrollArea } from "@/components/ScrollArea";
 // TODO replace with a text editor - lexical looks good
 export default function StickyNote() {
   return (
-    <ScrollArea className="w-full h-full" type="always">
-      <div className="justify-center p-6 bg-yellow-100  text-black flex flex-col gap-2">
+    <ScrollArea className="w-full h-full bg-yellow-100" type="always">
+      <div className="justify-center p-6 text-black flex flex-col gap-2">
         <p>
           Hello - Adam again! This is a work-in-progress rewrite of my old site
           over at:{" "}

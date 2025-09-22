@@ -6,8 +6,6 @@ const SORTED_COMMANDS = Object.entries(COMMANDS).sort(([a], [b]) => {
   return a.localeCompare(b);
 });
 
-console.log(SORTED_COMMANDS, COMMANDS);
-
 function TerminalManualEntry({
   command: { description, usage },
 }: {
@@ -15,9 +13,8 @@ function TerminalManualEntry({
 }) {
   return (
     <div>
-      <p className="text-lg">{usage}</p>
-
-      <p className="text-sm">{description}</p>
+      <div className="text-lg font-mono">{usage}</div>
+      <div className="text-sm pl-4">{description}</div>
     </div>
   );
 }
@@ -39,8 +36,8 @@ export default function TerminalManual() {
             <li>
               All file system commands interact with your local on-disk file
               system through IndexedDB. This means any changes will persist
-              across sessions and create very large files only eats up your disk
-              space so be warned.
+              across sessions and thus creating very large files only eats up
+              your disk space - so be warned.
             </li>
             <li>
               Redirection, piping and command chaining are <b>not</b> supported

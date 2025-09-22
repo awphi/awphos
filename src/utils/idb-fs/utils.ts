@@ -29,6 +29,7 @@ export async function getRoot(db: IDBDatabase): Promise<INode> {
     parentIdx.openCursor(IDBKeyRange.only(""))
   );
 
+  // create a root if it doesn't exsit
   if (!rootCursor) {
     const tx = db.transaction("inodes", "readwrite");
     const inodes = tx.objectStore("inodes");

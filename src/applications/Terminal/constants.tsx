@@ -81,7 +81,7 @@ export const COMMANDS: Record<string, CommandDef | undefined> = {
     },
     description: (
       <>
-        <p>Make a new directory or directories on the local file system</p>{" "}
+        <p>Make a new directory or directories on the local file system</p>
         <p>
           Use the <code>-p</code> flag to create all necessary parent
           directories if they don&apos;t yet exist
@@ -198,10 +198,11 @@ export const COMMANDS: Record<string, CommandDef | undefined> = {
     usage: "touch <files>",
   },
   help: {
-    run({ dispatch }) {
+    run({ dispatch, applicationId }) {
       dispatch(
         openApplication({
           definitionId: "terminal-manual",
+          parentId: applicationId,
         })
       );
       return ["Opening manual..."];
@@ -209,5 +210,35 @@ export const COMMANDS: Record<string, CommandDef | undefined> = {
     description: "Opens this help manual",
     usage: "help",
   },
-  // TODO rm and eventually mv, bonus: ping or basic curl
+  rm: {
+    async run({ fs, args }) {
+      const files = args["_"];
+      const result: string[] = [];
+
+      for (const file of files) {
+        try {
+          if ((await fs.isDirectory(file)) && !args.r) {
+            result.push(`rm: ${file}: is a directory`);
+          } else {
+            await fs.rm(file, { recursive: !!args.r, force: !!args.f });
+          }
+        } catch (e) {
+          result.push(`rm: ${e}`);
+        }
+      }
+
+      result.push(" ");
+      return result;
+    },
+    parseOptions: {
+      boolean: ["r", "f"],
+      default: {
+        r: false,
+        f: false,
+      },
+    },
+    description: "Deletes a file or set of files from the filesystem",
+    usage: "rm [-rf] <files>",
+  },
+  // TODO mv, bonus: ping or basic curl
 };

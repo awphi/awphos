@@ -14,6 +14,7 @@ import { getApplicationDefinition } from "@/applications";
 export const DUMMY_APPLICATION: Application = {
   applicationId: "dummy",
   definitionId: "dummy",
+  parentId: null,
   props: {
     title: "",
     topLeft: {

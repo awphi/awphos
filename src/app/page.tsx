@@ -5,9 +5,48 @@ import TaskBar from "@/components/TaskBar";
 import { store } from "@/store";
 import { Provider } from "react-redux";
 import { useFocus } from "@/hooks/useFocus";
+import { useEffect } from "react";
+import { ensureDefaultFileSystem } from "@/utils/ensure-fs";
+import useAppDispatch from "@/hooks/useAppDispatch";
+import { openApplication } from "@/store/applications";
 
 function HomeContent() {
   const { focus } = useFocus();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    (async function () {
+      try {
+        // ensure default dirs/files exist
+        await ensureDefaultFileSystem();
+      } finally {
+        // open default applications
+        dispatch(
+          openApplication({
+            definitionId: "start-menu",
+            applicationId: "start-menu",
+            props: { minimized: true },
+          })
+        );
+
+        dispatch(
+          openApplication({
+            definitionId: "sticky-note",
+            props: {
+              size: {
+                height: 380,
+                width: 380,
+              },
+              title: "Sticky Note - Welcome!",
+            },
+            args: {
+              file: "/sticky-notes/welcome.json",
+            },
+          })
+        );
+      }
+    })();
+  }, [dispatch]);
 
   return (
     <>

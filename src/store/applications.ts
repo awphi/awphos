@@ -97,7 +97,7 @@ export const activeApplicationsSlice = createSlice({
           draggable: true,
           showTitleBar: true,
           ...def.defaultProps,
-          topLeft: { ...(def.defaultProps.topLeft ?? { x: 100, y: 100 }) },
+          topLeft: { ...(def.defaultProps.topLeft ?? { x: 50, y: 50 }) },
           size: { ...(def.defaultProps.size ?? { width: 500, height: 300 }) },
           minSize: {
             ...(def.defaultProps.minSize ?? { width: 250, height: 100 }),

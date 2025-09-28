@@ -8,11 +8,12 @@ export interface IDBFileSystemParams {
   onCwdChanged?: () => void;
 }
 
+// TODO some global event bus for file watchers so useFile can be reactive
 export default class IDBFileSystem {
   private _cwd: string;
   private _onCwdChanged: (() => void) | undefined;
 
-  constructor({ cwd = "/", onCwdChanged }: IDBFileSystemParams) {
+  constructor({ cwd = "/", onCwdChanged }: IDBFileSystemParams = {}) {
     this._cwd = cwd;
     this._onCwdChanged = onCwdChanged;
     const { loading, db } = getDbStatus();

@@ -7,7 +7,9 @@ import { useRef } from "react";
 
 export default function StickyNote() {
   const {
-    application: { args },
+    application: {
+      props: { args },
+    },
   } = useCurrentApplication();
   const editorRef = useRef<Quill>(null);
 

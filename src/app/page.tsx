@@ -38,9 +38,9 @@ function HomeContent() {
                 width: 380,
               },
               title: "Sticky Note - Welcome!",
-            },
-            args: {
-              file: "/sticky-notes/welcome.json",
+              args: {
+                file: "/sticky-notes/welcome.json",
+              },
             },
           })
         );

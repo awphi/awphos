@@ -36,9 +36,9 @@ export const DUMMY_APPLICATION: Application = {
     draggable: false,
     resizable: false,
     showTitleBar: false,
+    args: {},
   },
   state: "open",
-  args: {},
 };
 
 export function useApplication(applicationId: string) {

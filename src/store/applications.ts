@@ -22,6 +22,7 @@ export interface ApplicationProps {
   minimizable: boolean;
   maximizable: boolean;
   showTitleBar: boolean;
+  args: ApplicationArgs;
 }
 
 // TODO could be a more specific type?
@@ -36,7 +37,6 @@ export interface Application {
   props: ApplicationProps;
   state: "open" | "closing";
   parentId: string | null;
-  args: ApplicationArgs;
 }
 
 /**
@@ -50,7 +50,6 @@ export interface ApplicationPropsUpdate {
 export interface ApplicationOpenArgs {
   definitionId: string;
   applicationId?: string;
-  args?: ApplicationArgs;
   props?: Partial<ApplicationProps>;
   parentId?: string | null;
 }
@@ -65,7 +64,6 @@ export const activeApplicationsSlice = createSlice({
     openApplication(state, { payload }: PayloadAction<ApplicationOpenArgs>) {
       const {
         definitionId,
-        args = {},
         props: userProps = {},
         applicationId = crypto.randomUUID(),
       } = payload;
@@ -85,6 +83,10 @@ export const activeApplicationsSlice = createSlice({
         );
       }
 
+      const defaultProps =
+        typeof def.defaultProps === "function"
+          ? def.defaultProps()
+          : def.defaultProps;
       // TODO could use applyDefaults + some deep cloning?
       const props = Object.assign<ApplicationProps, Partial<ApplicationProps>>(
         {
@@ -96,11 +98,12 @@ export const activeApplicationsSlice = createSlice({
           resizable: true,
           draggable: true,
           showTitleBar: true,
-          ...def.defaultProps,
-          topLeft: { ...(def.defaultProps.topLeft ?? { x: 50, y: 50 }) },
-          size: { ...(def.defaultProps.size ?? { width: 500, height: 300 }) },
+          args: {},
+          ...defaultProps,
+          topLeft: { ...(defaultProps.topLeft ?? { x: 50, y: 50 }) },
+          size: { ...(defaultProps.size ?? { width: 500, height: 300 }) },
           minSize: {
-            ...(def.defaultProps.minSize ?? { width: 250, height: 100 }),
+            ...(defaultProps.minSize ?? { width: 250, height: 100 }),
           },
         },
         userProps
@@ -120,7 +123,6 @@ export const activeApplicationsSlice = createSlice({
         applicationId,
         definitionId,
         props,
-        args,
         state: "open",
         parentId: payload.parentId ?? null,
       };

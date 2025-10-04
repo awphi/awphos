@@ -111,3 +111,20 @@ export function stringToColor(str: string): string {
 export function isNumericSize(size: CSSSize): size is Size {
   return typeof size.width === "number" && typeof size.height === "number";
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce<T extends (...args: any[]) => any>(
+  callback: T,
+  wait: number
+): T {
+  let timeoutId: number | null = null;
+
+  return ((...args) => {
+    if (timeoutId !== null) {
+      window.clearTimeout(timeoutId);
+    }
+    timeoutId = window.setTimeout(() => {
+      callback(...args);
+    }, wait);
+  }) as T;
+}

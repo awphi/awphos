@@ -1,10 +1,12 @@
 import QuillEditor from "@/components/QuillEditor";
 import { ScrollArea } from "@/components/ScrollArea";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
+import { debounce } from "@/utils";
 import useFile from "@/utils/idb-fs/react/useFile";
 import { Loader2 } from "lucide-react";
+import type { Delta } from "quill";
 import type Quill from "quill";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 
 export default function StickyNote() {
   const {
@@ -18,8 +20,13 @@ export default function StickyNote() {
     throw new Error("Failed to open sticky note - missing file");
   }
 
-  // TODO check for error
-  const { file, loading } = useFile(args.file);
+  const { file, loading, write } = useFile(args.file);
+  const debouncedWrite = useMemo(() => {
+    return debounce((text: Delta) => {
+      const blob = new Blob([JSON.stringify(text)], { type: "text/json" });
+      return write(blob);
+    }, 500);
+  }, [write]);
 
   if (loading) {
     return (
@@ -34,8 +41,10 @@ export default function StickyNote() {
       <QuillEditor
         ref={editorRef}
         onTextChange={() => {
-          // TODO debounced writing back to disk - bonus points for saving status in quill toolbar
-          console.log(editorRef.current?.getContents());
+          const contents = editorRef.current?.getContents();
+          if (contents) {
+            debouncedWrite(contents);
+          }
         }}
         className="h-full"
         defaultValue={async () => {

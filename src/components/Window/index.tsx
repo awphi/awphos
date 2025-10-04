@@ -24,7 +24,6 @@ export interface WindowProps extends PropsWithChildren {
   application: Application;
 }
 
-// TODO re-add resizing - CSS resize property was a bit dodgy: weird animations, doesn't support bounding, broken w/ iframes in chrome
 function Window() {
   const {
     application: {

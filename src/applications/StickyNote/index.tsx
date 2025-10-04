@@ -5,6 +5,7 @@ import useOnce from "@/hooks/useOnce";
 import { debounce } from "@/utils";
 import useFile from "@/utils/idb-fs/react/useFile";
 import { Loader2 } from "lucide-react";
+import path from "nanopath/posix";
 import type { Delta } from "quill";
 import type Quill from "quill";
 import { useMemo, useRef } from "react";
@@ -12,13 +13,15 @@ import { useMemo, useRef } from "react";
 export default function StickyNote() {
   const {
     application: {
-      props: { args },
+      props: { args, cwd },
     },
     setProps,
   } = useCurrentApplication();
   const editorRef = useRef<Quill>(null);
-  const filePath: string =
-    args._[0] ?? `/sticky-notes/${new Date().toISOString()}.json`;
+  const filePath: string = path.resolve(
+    cwd,
+    args._[0] ?? `/sticky-notes/${new Date().toISOString()}.json`
+  );
 
   useOnce(() => {
     setProps({

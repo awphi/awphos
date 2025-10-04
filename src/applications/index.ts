@@ -15,7 +15,7 @@ import { applyDefaults, deepFreeze } from "@/utils";
 import type { HTMLMotionProps, TargetAndTransition } from "motion/react";
 import SystemSettings from "./SystemSettings";
 import StickyNote from "./StickyNote";
-import type { ApplicationProps } from "@/store/applications";
+import { type ApplicationProps } from "@/store/applications";
 import Terminal from "./Terminal";
 import TerminalManual from "./Terminal/TerminalManual";
 
@@ -64,6 +64,16 @@ const DEFAULT_DEFINITION: Required<ApplicationDefinition> = deepFreeze({
 
 export interface ApplicationsRegistry {
   definitions: Record<string, Required<ApplicationDefinition>>;
+}
+
+export function getApplicationDefinition(
+  id: string
+): Required<ApplicationDefinition> {
+  return applicationsRegistry.definitions[id] ?? DEFAULT_DEFINITION;
+}
+
+export function isValidApplicationDefinitionId(id: string): boolean {
+  return id in applicationsRegistry.definitions;
 }
 
 // TODO may need moving into redux state to support "installation" of custom applications at runtime
@@ -158,13 +168,3 @@ export const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
     DEFAULT_DEFINITION
   ),
 });
-
-export function getApplicationDefinition(
-  id: string
-): Required<ApplicationDefinition> {
-  return applicationsRegistry.definitions[id] ?? DEFAULT_DEFINITION;
-}
-
-export function isValidApplicationDefinitionId(id: string): boolean {
-  return id in applicationsRegistry.definitions;
-}

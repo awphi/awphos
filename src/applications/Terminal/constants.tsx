@@ -19,10 +19,35 @@ export interface CommandDef {
   parseOptions?: mri.Options;
 }
 
+function applicationCommand(
+  definitionId: string,
+  def: Omit<CommandDef, "run">
+): { [defId: string]: CommandDef } {
+  return {
+    [definitionId]: {
+      ...def,
+      run({ args, fs, dispatch }) {
+        dispatch(
+          openApplication({
+            definitionId,
+            props: {
+              args,
+              cwd: fs.cwd(),
+            },
+          })
+        );
+        return [""];
+      },
+    },
+  };
+}
+
 export const ALIASES: Record<string, string> = {
   empty: "clear",
   close: "exit",
   quit: "exit",
+  stop: "exit",
+  cwd: "pwd",
 };
 
 export const COMMANDS: Record<string, CommandDef | undefined> = {
@@ -240,5 +265,9 @@ export const COMMANDS: Record<string, CommandDef | undefined> = {
     description: "Deletes a file or set of files from the filesystem",
     usage: "rm [-rf] <files>",
   },
+  ...applicationCommand("sticky-note", {
+    usage: "sticky-note <file>",
+    description: "Open a JSON file in the sticky note editor",
+  }),
   // TODO mv, bonus: ping or basic curl
 };

@@ -24,6 +24,7 @@ export interface ApplicationProps {
   maximizable: boolean;
   showTitleBar: boolean;
   args: ApplicationArgs;
+  cwd: string;
 }
 
 // TODO could be a more specific type?
@@ -99,6 +100,7 @@ export const activeApplicationsSlice = createSlice({
           resizable: true,
           draggable: true,
           showTitleBar: true,
+          cwd: "/",
           args: {
             _: [],
           },

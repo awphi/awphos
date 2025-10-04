@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import type Quill from "quill";
 import type { Delta, Range, EmitterSource } from "quill";
-import "quill/dist/quill.snow.css";
+import "./theme.css";
 
 export interface QuillEditorProps
   extends Omit<ComponentProps<"div">, "defaultValue"> {
@@ -75,7 +75,6 @@ const QuillEditor = forwardRef<Quill, QuillEditorProps>(
             typeof defaultValueRef.current === "function"
               ? await defaultValueRef.current()
               : defaultValueRef.current;
-          console.log(delta);
           quill.setContents(delta);
         }
 

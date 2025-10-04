@@ -1,4 +1,5 @@
 import QuillEditor from "@/components/QuillEditor";
+import { ScrollArea } from "@/components/ScrollArea";
 import useCurrentApplication from "@/hooks/useCurrentApplication";
 import useFile from "@/utils/idb-fs/react/useFile";
 import { Loader2 } from "lucide-react";
@@ -28,20 +29,20 @@ export default function StickyNote() {
     );
   }
 
-  // TODO custom QuillEditor theme that better suits sticky notes
-  // TODO replace overflow-scroll with ScrollArea & make toolbar sticky
   return (
-    <QuillEditor
-      ref={editorRef}
-      onTextChange={() => {
-        // TODO debounced writing back to disk - bonus points for saving status in quill toolbar
-        console.log(editorRef.current?.getContents());
-      }}
-      className="bg-yellow-100 h-full w-full text-neutral-950 overflow-scroll"
-      defaultValue={async () => {
-        const value = (await file?.data.text()) ?? "{}";
-        return JSON.parse(value);
-      }}
-    />
+    <ScrollArea className="h-full bg-yellow-100 text-neutral-950">
+      <QuillEditor
+        ref={editorRef}
+        onTextChange={() => {
+          // TODO debounced writing back to disk - bonus points for saving status in quill toolbar
+          console.log(editorRef.current?.getContents());
+        }}
+        className="h-full"
+        defaultValue={async () => {
+          const value = (await file?.data.text()) ?? "{}";
+          return JSON.parse(value);
+        }}
+      />
+    </ScrollArea>
   );
 }

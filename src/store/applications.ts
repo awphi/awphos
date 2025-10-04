@@ -6,6 +6,7 @@ import {
   getApplicationDefinition,
   isValidApplicationDefinitionId,
 } from "@/applications";
+import type mri from "mri";
 
 /**
  * Mutable properties of a running application
@@ -26,7 +27,7 @@ export interface ApplicationProps {
 }
 
 // TODO could be a more specific type?
-export type ApplicationArgs = Record<string, unknown>;
+export type ApplicationArgs = mri.Argv;
 
 /**
  * Instance of a running application
@@ -98,7 +99,9 @@ export const activeApplicationsSlice = createSlice({
           resizable: true,
           draggable: true,
           showTitleBar: true,
-          args: {},
+          args: {
+            _: [],
+          },
           ...defaultProps,
           topLeft: { ...(defaultProps.topLeft ?? { x: 50, y: 50 }) },
           size: { ...(defaultProps.size ?? { width: 500, height: 300 }) },

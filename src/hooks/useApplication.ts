@@ -36,7 +36,7 @@ export const DUMMY_APPLICATION: Application = {
     draggable: false,
     resizable: false,
     showTitleBar: false,
-    args: {},
+    args: { _: [] },
   },
   state: "open",
 };

@@ -125,7 +125,7 @@ export const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
         name: "Sticky Note",
         component: StickyNote,
         icon: StickyNoteIcon,
-        defaultProps: () => ({
+        defaultProps: {
           minimizable: false,
           maximizable: false,
           size: {
@@ -136,10 +136,7 @@ export const applicationsRegistry = deepFreeze<ApplicationsRegistry>({
             height: 300,
             width: 300,
           },
-          args: {
-            file: `/sticky-notes/${crypto.randomUUID()}-${new Date().toISOString()}.json`,
-          },
-        }),
+        },
       },
       terminal: {
         name: "Terminal",

@@ -37,6 +37,7 @@ export const DUMMY_APPLICATION: Application = {
     resizable: false,
     showTitleBar: false,
     args: { _: [] },
+    cwd: "/",
   },
   state: "open",
 };
